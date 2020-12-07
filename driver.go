@@ -24,14 +24,17 @@ func helloWorld(uri, username, password string, encrypted bool) (string, error) 
 		c.Encrypted = encrypted
 	})
 	if err != nil {
-		return "", err
+		return "driver connection error", err
 	}
+    fmt.Println("established driver connection\n")
 	defer driver.Close()
 
 	session, err := driver.Session(neo4j.AccessModeWrite)
+
 	if err != nil {
-		return "", err
+		return "session creation error", err
 	}
+    fmt.Println("created session with writemode\n")
 	defer session.Close()
 
 	greeting, err := session.WriteTransaction(func(transaction neo4j.Transaction) (interface{}, error) {
@@ -43,7 +46,7 @@ func helloWorld(uri, username, password string, encrypted bool) (string, error) 
 		if err != nil {
 			return nil, err
 		}
-
+        fmt.Println("node creation query passed\n")
 		if result.Next() {
 			return result.Record().GetByIndex(0), nil
 		}
@@ -81,6 +84,6 @@ func main() {
         return
     }
 
-    helloWorld("bolt://localhost:7687", *arg_password_raw, *arg_password_raw, false)
-    fmt.Println("Done")
+    ret, _ := helloWorld("bolt://localhost:7687", *arg_password_raw, *arg_password_raw, false)
+    fmt.Println("Done: ", ret)
 }
