@@ -94,17 +94,20 @@ func drive(uri, username, password string, cm ChannelPool) {
             //cm.created <- true
         case update := <-cm.updateChannel:
             //update_user(update.username, update.property, update.value, &session)
-            result, err := session.Run("MATCH (a:Person{ username: $u_name }) SET a.$property = $value RETURN a", map[string]interface{}{
+            prop := "n." + update.property
+            fmt.Println(prop)
+            result, err := session.Run("match (n:Person {username: $u_name}) set $property = $value, return $property", map[string]interface{}{
               "u_name": update.username,
-              "property":   update.property,
+              "property":   prop,
               "value": update.value, })
+            fmt.Printf("match (n:Person {username: %s}) set %s = %s return %s", update.username, prop, update.value, prop)
 
               if err != nil {
                   fmt.Println("Error:\n", err)
                   return
               }
               //fmt.Println("query fine\n")
-              fmt.Printf("Updated %s %s to %s\n\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+              fmt.Printf("Updated %s %s to %s\n\n", update.username, update.property, result.Record().GetByIndex(0).(string))
         }
     }
 }
