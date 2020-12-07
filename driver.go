@@ -13,7 +13,7 @@ import (
 */
 var (
 	arg_uri     = flag.String("uri", "bolt://localhost:7687", "The URI for the Nexus database, to connect to it.")
-    arg_username_raw     = flag.String("u", "test", "Usernames are unique identifiers for database users.")
+    arg_username_raw     = flag.String("u", "dan", "Usernames are unique identifiers for database users.")
     arg_password_raw     = flag.String("p", "test", "Unencrypted password for selected username.")
 
     totalQueries int64
@@ -64,6 +64,42 @@ func helloWorld(uri, username, password string, encrypted bool) (string, error) 
 	return "done", nil
 }
 
+func drive(uri, username, password string) error {
+        // configForNeo4j35 := func(conf *neo4j.Config) {}
+    configForNeo4j40 := func(conf *neo4j.Config) { conf.Encrypted = false }
+
+    driver, err := neo4j.NewDriver("bolt://localhost:7687", neo4j.BasicAuth(username, password, ""), configForNeo4j40)
+    if err != nil {
+    	return err
+    }
+    fmt.Println("established driver connection\n")
+    // handle driver lifetime based on your application lifetime requirements
+    // driver's lifetime is usually bound by the application lifetime, which usually implies one driver instance per application
+    defer driver.Close()
+
+    // For multidatabase support, set sessionConfig.DatabaseName to requested database
+    sessionConfig := neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite}
+    session, err := driver.NewSession(sessionConfig)
+    if err != nil {
+    	return err
+    }
+    fmt.Println("established session connection\n")
+    defer session.Close()
+
+    result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name }) RETURN n.first_name, n.last_name", map[string]interface{}{
+    "first_name":   "Quindarius",
+    "last_name": "Gooch", })
+
+    if err != nil {
+    	return err
+    }
+    fmt.Println("query fine\n")
+    for result.Next() {
+    	fmt.Printf("Created Person with first_name = '%d' and last_name = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string))
+    }
+    return result.Err()
+}
+
 /*
 result, err := session.Run("CREATE (n:Person { first_name: $fn, last_name: $ln }) RETURN n.first_name, n.last_name", map[string]interface{}{
 "first_name":   "Quindarius",
@@ -88,9 +124,13 @@ func main() {
         return
     }
 
-    ret, err := helloWorld("bolt://localhost:7687", *arg_password_raw, *arg_password_raw, false)
+    /*ret, err := helloWorld("bolt://localhost:7687", *arg_password_raw, *arg_password_raw, false)
     if err != nil {
 		fmt.Println(ret, err)
+	}*/
+    err := drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw)
+    if err != nil {
+		fmt.Println("Error:\n", err)
 	}
-    fmt.Println("Done: ", ret)
+    fmt.Println("Done.")
 }
