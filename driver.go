@@ -76,7 +76,7 @@ func drive(uri, username, password string, cm ChannelPool) {
     for {
         select {
         case user := <-cm.createChannel:
-            fmt.Println("Create user message received")
+            //fmt.Println("Create user message received")
             result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name, username: $username, password: $password}) RETURN n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
             "first_name":   user.first_name,
             "last_name": user.last_name,
@@ -89,12 +89,22 @@ func drive(uri, username, password string, cm ChannelPool) {
             }
             //fmt.Println("query fine\n")
             for result.Next() {
-            	fmt.Printf("Created Person '%s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+            	fmt.Printf("Created Person '%s %s' with username = '%s'\n\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
             }
             //cm.created <- true
         case update := <-cm.updateChannel:
-            update_user(update.username, update.property, update.value, &session)
+            //update_user(update.username, update.property, update.value, &session)
+            result, err := session.Run("MATCH (a:Person) WHERE a.username = '$u_name' SET a.$property = $value RETURN a", map[string]interface{}{
+              "u_name": update.username,
+              "property":   update.property,
+              "value": update.value, })
 
+              if err != nil {
+                  fmt.Println("Error:\n", err)
+                  return
+              }
+              //fmt.Println("query fine\n")
+              //fmt.Printf("Updated %s %s to %s\n\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
         }
     }
 }
@@ -119,7 +129,7 @@ if err != nil {
 }
 //fmt.Println("query fine\n")
 for result.Next() {
-    fmt.Printf("Created Person '%s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+    fmt.Printf("Updated Person %s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
 }
 
 }
@@ -132,18 +142,24 @@ WHERE a.username = '$u_name' AND h.address = '$address'
 CREATE (a)-[r:House]->(b) RETURN r`, nil)
 }*/
 
+func (cm ChannelPool) update_by_username(u_name, property, value string) {
+    var up = &Update {u_name, property, value}
+    cm.updateChannel <- *up
+}
+
 //update a user's property
-func update_user(u_name string, property string, value string, s *neo4j.Session){
-  _, err := (*s).Run(`
-        MATCH (a:Person)
-WHERE a.username = '$u_name' SET a.$property = $value RETURN a`, nil)
+func update_user(u_name string, property string, value string, s *neo4j.Session) {
+  result, err := (*s).Run("MATCH (a:Person{username: $u_name}) SET a.$property = $value RETURN a", map[string]interface{}{
+    "u_name": u_name,
+    "property":   property,
+    "value": value, })
 
 if err != nil {
     fmt.Println("Error:\n", err)
     return
 }
 //fmt.Println("query fine\n")
-fmt.Println("Updated $u_name $property to $value")
+fmt.Printf("Updated %s %s to %s\n\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
 }
 
 /*
@@ -168,8 +184,6 @@ func main() {
     cm.createChannel = make(chan User, 128)
     cm.created = make(chan bool)
     cm.updateChannel = make(chan Update, 128)
-
-
     go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
 
     for {
@@ -177,43 +191,51 @@ func main() {
         var option string
         fmt.Println("Options: ")
         fmt.Println("1. Create a user (first_name, last_name, username, password): \n2. Update a specific property of a Person node\n3. Exit")
+        fmt.Printf("nexus> ")
         fmt.Scanln(&option)
         if option == "create"  || option == "1" {
             fmt.Println("Enter a create Person query: (first name, last name, username, password)")
             var first string
             fmt.Println("First name: ")
+            fmt.Printf("nexus> ")
             fmt.Scanln(&first)
 
             var last string
             fmt.Println("Last name: ")
+            fmt.Printf("nexus> ")
             fmt.Scanln(&last)
 
             var user string
             fmt.Println("Username: ")
+            fmt.Printf("nexus> ")
             fmt.Scanln(&user)
 
             var pass string
             fmt.Println("Password: ")
+            fmt.Printf("nexus> ")
             fmt.Scanln(&pass)
 
             cm.create_person(first, last, user, pass)
-            time.Sleep(time.Second * 2)
+            time.Sleep(time.Millisecond * 500)
 
         } else if option == "update" || option == "2"{
             var user string
             fmt.Println("Username: ")
+            fmt.Printf("nexus> ")
             fmt.Scanln(&user)
 
             var property string
             fmt.Println("Property: ")
+            fmt.Printf("nexus> ")
             fmt.Scanln(&property)
 
             var value string
             fmt.Println("Value: ")
+            fmt.Printf("nexus> ")
             fmt.Scanln(&value)
-            var update = &Update {user, property, value}
-            cm.updateChannel <- *update
-            time.Sleep(time.Second * 2)
+            //var update = &Update {user, property, value}
+            cm.update_by_username(user, property, value)
+            time.Sleep(time.Millisecond * 500)
 
         } else if option == "e" || option == "exit" || option == "3" {
             fmt.Println("Exiting... gracefully")
