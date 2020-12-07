@@ -86,26 +86,39 @@ func drive(uri, username, password string) error {
     fmt.Println("established session connection\n")
     defer session.Close()
 
-    result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name }) RETURN n.first_name, n.last_name", map[string]interface{}{
-    "first_name":   "Quindarius",
-    "last_name": "Gooch", })
+    result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name, username: $username, password: $password}) RETURN n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
+    "first_name":   "Milton",
+    "last_name": "Peraza",
+    "username": "mperaza",
+    "password": "testing", })
 
     if err != nil {
     	return err
     }
     fmt.Println("query fine\n")
     for result.Next() {
-    	fmt.Printf("Created Person with first_name = '%d' and last_name = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string))
+    	fmt.Printf("Created Person '%s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
     }
     return result.Err()
 }
 
 /*
-result, err := session.Run("CREATE (n:Person { first_name: $fn, last_name: $ln }) RETURN n.first_name, n.last_name", map[string]interface{}{
-"first_name":   "Quindarius",
-"last_name": "Gooch",
-})
+Runs a CREATE (n:Person) node with specified parameters
 */
+/*func create_person(first_name, last_name, username, password string) error {
+    result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name, username: $username, password: $password}) RETURN n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
+    "first_name":   first_name,
+    "last_name": last_name,
+    "username": username,
+    "password": password, })
+    if err != nil {
+        return err
+    }
+    for result.Next() {
+    	fmt.Printf("Created Person '%s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+    }
+    return result.Err()
+}*/
 
 /*
 * Main function for driver
@@ -124,10 +137,6 @@ func main() {
         return
     }
 
-    /*ret, err := helloWorld("bolt://localhost:7687", *arg_password_raw, *arg_password_raw, false)
-    if err != nil {
-		fmt.Println(ret, err)
-	}*/
     err := drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw)
     if err != nil {
 		fmt.Println("Error:\n", err)
