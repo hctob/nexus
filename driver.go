@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "flag"
+    "time"
     "runtime"
     "github.com/neo4j/neo4j-go-driver/neo4j"
 )
@@ -19,9 +20,16 @@ type User struct {
     password string
 }
 
+type Update struct {
+    username string
+    property string
+    value string
+}
+
 
 type ChannelPool struct {
     createChannel  chan User     //channel for creating a new user
+    updateChannel chan Update
     created     chan bool
 }
 
@@ -31,10 +39,6 @@ func pool_init() *ChannelPool {
     cm.created = make(chan bool)
     return &cm  //return pointer to newly initialized ChannelPool struct
 }
-
-func (cm ChannelPool) Listen() {
-}
-
 
 var (
 	arg_uri     = flag.String("uri", "bolt://localhost:7687", "The URI for the Nexus database, to connect to it.")
@@ -87,32 +91,59 @@ func drive(uri, username, password string, cm ChannelPool) {
             for result.Next() {
             	fmt.Printf("Created Person '%s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
             }
-            cm.created <- true
+            //cm.created <- true
+        case update := <-cm.updateChannel:
+            update_user(update.username, update.property, update.value, &session)
+
         }
     }
 }
 
 /*
-Runs a CREATE (n:Person) node with specified parameters
+* Creates a Person node with the specified properties
 */
-/*func create_person(first_name, last_name, username, password string) error {
-    result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name, username: $username, password: $password}) RETURN n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
-    "first_name":   first_name,
-    "last_name": last_name,
-    "username": username,
-    "password": password, })
-    if err != nil {
-        return err
-    }
-    for result.Next() {
-    	fmt.Printf("Created Person '%s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
-    }
-    return result.Err()
-}*/
-
 func (cm ChannelPool) create_person(first_name, last_name, username, password string) {
     var user = &User {first_name, last_name, username, password}
     cm.createChannel <- *user
+}
+
+func create_contact_person(u_name1 string, u_name2 string, s *neo4j.Session){
+  result, err := (*s).Run(`
+        MATCH (a:Person),(b:Person)
+WHERE a.username = '$u_name1' AND b.username = '$u_name2'
+CREATE (a)-[r:Friend]->(b) RETURN r`, nil)
+
+if err != nil {
+    fmt.Println("Error:\n", err)
+    return
+}
+//fmt.Println("query fine\n")
+for result.Next() {
+    fmt.Printf("Created Person '%s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+}
+
+}
+
+//connects a person to a house
+/*func create_contact_house(u_name string, address string, s *neo4j.Session){
+  result, _ := (*s).Run(`
+        MATCH (a:Person),(h:House)
+WHERE a.username = '$u_name' AND h.address = '$address'
+CREATE (a)-[r:House]->(b) RETURN r`, nil)
+}*/
+
+//update a user's property
+func update_user(u_name string, property string, value string, s *neo4j.Session){
+  _, err := (*s).Run(`
+        MATCH (a:Person)
+WHERE a.username = '$u_name' SET a.$property = $value RETURN a`, nil)
+
+if err != nil {
+    fmt.Println("Error:\n", err)
+    return
+}
+//fmt.Println("query fine\n")
+fmt.Println("Updated $u_name $property to $value")
 }
 
 /*
@@ -132,32 +163,60 @@ func main() {
         return
     }
 
+    //TODO: use pool_init()
     var cm ChannelPool
     cm.createChannel = make(chan User, 128)
     cm.created = make(chan bool)
+    cm.updateChannel = make(chan Update, 128)
+
+
     go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
 
     for {
-        fmt.Println("Enter a create Person query: (first name, last name, username, password)")
-        var first string
-        fmt.Println("First name: ")
-        fmt.Scanln(&first)
 
-        var last string
-        fmt.Println("Last name: ")
-        fmt.Scanln(&last)
+        var option string
+        fmt.Println("Options: ")
+        fmt.Println("1. Create a user (first_name, last_name, username, password): \n2. Update a specific property of a Person node\n3. Exit")
+        fmt.Scanln(&option)
+        if option == "create"  || option == "1" {
+            fmt.Println("Enter a create Person query: (first name, last name, username, password)")
+            var first string
+            fmt.Println("First name: ")
+            fmt.Scanln(&first)
 
-        var user string
-        fmt.Println("Username: ")
-        fmt.Scanln(&user)
+            var last string
+            fmt.Println("Last name: ")
+            fmt.Scanln(&last)
 
-        var pass string
-        fmt.Println("Password: ")
-        fmt.Scanln(&pass)
+            var user string
+            fmt.Println("Username: ")
+            fmt.Scanln(&user)
 
-        cm.create_person(first, last, user, pass)
-        created := <-cm.created
-        if created == true {
+            var pass string
+            fmt.Println("Password: ")
+            fmt.Scanln(&pass)
+
+            cm.create_person(first, last, user, pass)
+            time.Sleep(time.Second * 2)
+
+        } else if option == "update" || option == "2"{
+            var user string
+            fmt.Println("Username: ")
+            fmt.Scanln(&user)
+
+            var property string
+            fmt.Println("Property: ")
+            fmt.Scanln(&property)
+
+            var value string
+            fmt.Println("Value: ")
+            fmt.Scanln(&value)
+            var update = &Update {user, property, value}
+            cm.updateChannel <- *update
+            time.Sleep(time.Second * 2)
+
+        } else if option == "e" || option == "exit" || option == "3" {
+            fmt.Println("Exiting... gracefully")
             return
         }
     }
