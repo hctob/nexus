@@ -97,18 +97,30 @@ func drive(uri, username, password string, cm ChannelPool) {
             //update_user(update.username, update.property, update.value, &session)
             prop := "n." + update.property
             fmt.Println(prop)
-            result, err := session.Run("match (n:Person {username: $u_name}) set $property = $value, return $property", map[string]interface{}{
-              "u_name": update.username,
-              "property":   prop,
-              "value": update.value, })
-            fmt.Printf("match (n:Person {username: %s}) set %s = %s return %s", update.username, prop, update.value, prop)
+            /*up_map := map[string]interface{}{
+                "username": update.username,
+                update.property:   update.value,
+            }*/
+            //q_s := property_query(update.username, update.property, update.value)
+            //result, err := session.Run(q_s, nil)
+            //result, err := session.Run(fmt.Sprintf("match (n:Person {username: %s}) SET %s = %s, return n", update.username, prop, update.value), nil)
+            v := update.value
+            un := update.username
+            result, err := session.Run(fmt.Sprintf("MATCH (n:Person {username: $u_name}) SET %s = $value RETURN %s", prop, prop), map[string]interface{}{
+              "value": v,
+              "u_name": un,
+            })
+
+            //fmt.Printf("match (n:Person {username: %s}) set %s = %s return %s", update.username, prop, update.value, prop)
 
               if err != nil {
                   fmt.Println("Error:\n", err)
                   return
               }
               //fmt.Println("query fine\n")
-              fmt.Printf("Updated %s %s to %s\n\n", update.username, update.property, result.Record().GetByIndex(0).(string))
+              for result.Next() {
+              fmt.Printf("Updated %s %s to %s\n", update.username, update.property, result.Record().GetByIndex(0).(string))
+            }
         case username := <-cm.getNodeChannel:
             result, err := session.Run("match (n:Person {username: $u_name}) return n", map[string]interface{}{
               "u_name": username, })
@@ -165,6 +177,24 @@ CREATE (a)-[r:House]->(b) RETURN r`, nil)
 func (cm ChannelPool) update_by_username(u_name, property, value string) {
     var up = &Update {u_name, property, value}
     cm.updateChannel <- *up
+}
+
+func property_query(username, property, value string) string {
+    query := ""
+    switch property {
+    case "first_name":
+        query = fmt.Sprintf("match (n:Person {username: %s}) SET n.first_name = %s, return n", username, value)
+    case "last_name":
+        query = fmt.Sprintf("match (n:Person {username: %s}) SET n.last_name = %s, return n", username, value)
+    case "username":
+        query = fmt.Sprintf("match (n:Person {username: %s}) SET n.last_name = %s, return n", username, value)
+    case "password":
+        query = fmt.Sprintf("match (n:Person {username: %s}) SET n.password = %s, return n", username, value)
+    default:
+        query = "ERROR"
+    }
+    fmt.Println("query: ",query)
+    return query
 }
 
 //update a user's property
