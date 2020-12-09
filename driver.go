@@ -30,6 +30,7 @@ type Update struct {
 type ChannelPool struct {
     createChannel  chan User     //channel for creating a new user
     updateChannel chan Update
+    getNodeChannel   chan string
     created     chan bool
 }
 
@@ -53,7 +54,7 @@ func drive(uri, username, password string, cm ChannelPool) {
         // configForNeo4j35 := func(conf *neo4j.Config) {}
     configForNeo4j40 := func(conf *neo4j.Config) { conf.Encrypted = false }
 
-    driver, err := neo4j.NewDriver("bolt://localhost:7687", neo4j.BasicAuth(username, password, ""), configForNeo4j40)
+    driver, err := neo4j.NewDriver(uri, neo4j.BasicAuth(username, password, ""), configForNeo4j40)
     if err != nil {
 		fmt.Println("Error:", err)
         return
@@ -108,6 +109,18 @@ func drive(uri, username, password string, cm ChannelPool) {
               }
               //fmt.Println("query fine\n")
               fmt.Printf("Updated %s %s to %s\n\n", update.username, update.property, result.Record().GetByIndex(0).(string))
+        case username := <-cm.getNodeChannel:
+            result, err := session.Run("match (n:Person {username: $u_name}) return n", map[string]interface{}{
+              "u_name": username, })
+
+              if err != nil {
+                  fmt.Println("Error:\n", err)
+                  return
+              }
+              //fmt.Println("query fine\n")
+              for result.Next() {
+                  fmt.Printf("Node: %s\n\n", result.Record().GetByIndex(0))
+              }
         }
     }
 }
@@ -118,6 +131,10 @@ func drive(uri, username, password string, cm ChannelPool) {
 func (cm ChannelPool) create_person(first_name, last_name, username, password string) {
     var user = &User {first_name, last_name, username, password}
     cm.createChannel <- *user
+}
+
+func (cm ChannelPool) get_person(username string) {
+    cm.getNodeChannel <- username
 }
 
 func create_contact_person(u_name1 string, u_name2 string, s *neo4j.Session){
@@ -187,13 +204,15 @@ func main() {
     cm.createChannel = make(chan User, 128)
     cm.created = make(chan bool)
     cm.updateChannel = make(chan Update, 128)
+    cm.getNodeChannel = make(chan string, 128)
+
     go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
 
     for {
 
         var option string
-        fmt.Println("Options: ")
-        fmt.Println("1. Create a user (first_name, last_name, username, password): \n2. Update a specific property of a Person node\n3. Exit")
+        fmt.Println("\nOptions: ")
+        fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Exit")
         fmt.Printf("nexus> ")
         fmt.Scanln(&option)
         if option == "create"  || option == "1" {
@@ -240,9 +259,16 @@ func main() {
             cm.update_by_username(user, property, value)
             time.Sleep(time.Millisecond * 500)
 
-        } else if option == "e" || option == "exit" || option == "3" {
+        } else if option == "e" || option == "exit" || option == "4" {
             fmt.Println("Exiting... gracefully")
             return
+        } else if option == "get" || option == "3" {
+            var user string
+            fmt.Println("Username: ")
+            fmt.Printf("nexus> ")
+            fmt.Scanln(&user)
+            cm.get_person(user)
+            time.Sleep(time.Millisecond * 500)
         }
     }
     fmt.Println("Done.")
