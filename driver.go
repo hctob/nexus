@@ -90,7 +90,7 @@ func drive(uri, username, password string, cm ChannelPool) {
               fmt.Printf("Updated %s %s to %s\n", update.username, update.property, result.Record().GetByIndex(0).(string))
             }
         case username := <-cm.getNodeChannel:
-            result, err := session.Run("match (n:Person {username: $u_name}) return n", map[string]interface{}{
+            result, err := session.Run("match (n:Person {username: $u_name}) return n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
               "u_name": username, })
 
               if err != nil {
@@ -99,7 +99,7 @@ func drive(uri, username, password string, cm ChannelPool) {
               }
               //fmt.Println("query fine\n")
               for result.Next() {
-                  fmt.Printf("Node: %s\n\n", result.Record().GetByIndex(0))
+                  fmt.Printf("\nNode: \"%s %s\":\nusername :%s\npassword: %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
               }
 
         case friends := <-cm.friendChannel:
@@ -201,9 +201,6 @@ func main() {
             cm.update_by_username(user, property, value)
             time.Sleep(time.Millisecond * 500)
 
-        } else if option == "e" || option == "exit" || option == "5" {
-            fmt.Println("Exiting... gracefully")
-            return
         } else if option == "get" || option == "3" {
             var user string
             fmt.Println("Username: ")
@@ -222,6 +219,9 @@ func main() {
             fmt.Scanln(&user2)
             cm.make_friends(user1, user2)
             time.Sleep(time.Millisecond * 500)
+        } else if option == "e" || option == "exit" || option == "5" {
+            fmt.Println("Exiting... gracefully")
+            return
         }
     }
     fmt.Println("Done.")
