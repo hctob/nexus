@@ -42,8 +42,8 @@ func pool_init() *ChannelPool {
 
 var (
 	arg_uri     = flag.String("uri", "bolt://localhost:7687", "The URI for the Nexus database, to connect to it.")
-    arg_username_raw     = flag.String("u", "test", "Usernames are unique identifiers for database users.")
-    arg_password_raw     = flag.String("p", "test", "Unencrypted password for selected username.")
+    arg_username_raw     = flag.String("u", "neo4j", "Usernames are unique identifiers for database users.")
+    arg_password_raw     = flag.String("p", "neo4j", "Unencrypted password for selected username.")
 
     totalQueries int64
 )
@@ -53,7 +53,7 @@ func drive(uri, username, password string, cm ChannelPool) {
         // configForNeo4j35 := func(conf *neo4j.Config) {}
     configForNeo4j40 := func(conf *neo4j.Config) { conf.Encrypted = false }
 
-    driver, err := neo4j.NewDriver("bolt://localhost:7687", neo4j.BasicAuth(username, password, ""), configForNeo4j40)
+    driver, err := neo4j.NewDriver("bolt://localhost:7687", neo4j.BasicAuth(username, password, "will"), configForNeo4j40)
     if err != nil {
 		fmt.Println("Error:", err)
         return

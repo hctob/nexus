@@ -1,12 +1,12 @@
 package main
 
 import (
-  "goLogin/controller"
-  "goLogin/model"
   "log"
   "net/http"
   "github.com/gorilla/mux"
   "github.com/icza/session"
+  "io/ioutil"
+  "encoding/json"
 )
 
 type User struct{
@@ -29,7 +29,10 @@ func login(w http.ResponseWriter, r *http.Request){
   }
   //if password at node with username user.username equals user.password
     //log in
-
+  result, err := session.Run(fmt.Sprintf("MATCH (n:Person {username: $u_name}) SET %s = $value RETURN %s", prop, prop), map[string]interface{}{
+              "value": v,
+              "u_name": un,
+  })
   //get profile info from neo4j
 
   //create session
