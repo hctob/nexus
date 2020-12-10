@@ -26,22 +26,29 @@ type Friends struct {
     u_name2 string
 }
 
+type Login struct {
+    username string
+    password string
+}
+
 
 type ChannelPool struct {
     createChannel  chan User     //channel for creating a new user
     updateChannel chan Update
     getNodeChannel   chan string
     friendChannel   chan Friends
-    created     chan bool
+    loginChannel    chan Login
+    loginGood     chan bool
 }
 
 func pool_init() ChannelPool {
     var cm ChannelPool
     cm.createChannel = make(chan User, 128)
-    cm.created = make(chan bool)
+    cm.loginGood = make(chan bool)
     cm.updateChannel = make(chan Update, 128)
     cm.getNodeChannel = make(chan string, 128)
     cm.friendChannel = make(chan Friends, 128)
+    cm.loginChannel = make(chan Login, 128)
     return cm  //return pointer to newly initialized ChannelPool struct
 }
 /*
@@ -94,6 +101,13 @@ if err != nil {
 }
 //fmt.Println("query fine\n")
 fmt.Printf("Updated %s %s to %s\n\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+}
+
+func (cm ChannelPool) login(username, password string) bool {
+    logInfo := &Login{username, password}
+    cm.loginChannel <- *logInfo
+    good := <-cm.loginGood
+    return good
 }
 
 //connects a person to a house

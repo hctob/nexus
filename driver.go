@@ -58,20 +58,14 @@ func drive(uri, username, password string, cm ChannelPool) {
             }
             //fmt.Println("query fine\n")
             for result.Next() {
-            	fmt.Printf("Created Person '%s %s' with username = '%s'\n\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+            	fmt.Printf("\nCreated Person '%s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
             }
             //cm.created <- true
         case update := <-cm.updateChannel:
             //update_user(update.username, update.property, update.value, &session)
-            prop := "n." + update.property
-            fmt.Println(prop)
-            /*up_map := map[string]interface{}{
-                "username": update.username,
-                update.property:   update.value,
-            }*/
-            //q_s := property_query(update.username, update.property, update.value)
-            //result, err := session.Run(q_s, nil)
-            //result, err := session.Run(fmt.Sprintf("match (n:Person {username: %s}) SET %s = %s, return n", update.username, prop, update.value), nil)
+            /*prop := "n." + update.property
+            fmt.Println(prop)*/
+
             v := update.value
             un := update.username
             result, err := session.Run(fmt.Sprintf("MATCH (n:Person {username: $u_name}) SET %s = $value RETURN %s", prop, prop), map[string]interface{}{
@@ -116,8 +110,32 @@ func drive(uri, username, password string, cm ChannelPool) {
               return
           }
           for result.Next() {
-              fmt.Printf("%s\ncreated between %s and %s\n", result.Record().GetByIndex(0), result.Record().GetByIndex(1), result.Record().GetByIndex(2))
+              fmt.Printf("\n%s\ncreated between %s and %s\n", result.Record().GetByIndex(0), result.Record().GetByIndex(1), result.Record().GetByIndex(2))
           }
+      case login := <-cm.loginChannel:
+          un := login.username
+          //fmt.Println("Received username =", un)
+          pw := login.password
+          //fmt.Println("Received password =", pw)
+          result, err := session.Run("MATCH (a:Person{username: $username}) return a.password", map[string]interface{}{
+              "username" : un,
+               "password" : pw,
+          })
+
+        if err != nil {
+            fmt.Println("Error:\n", err)
+            return
+        }
+        //res := false
+        for result.Next() {
+            fmt.Println(login.password, result.Record().GetByIndex(0).(string))
+            if login.password == result.Record().GetByIndex(0).(string) {
+                cm.loginGood <- true
+            } else {
+                cm.loginGood <- false
+            }
+        }
+        //cm.loginGood <- false
         }
     }
 }
@@ -126,7 +144,10 @@ func drive(uri, username, password string, cm ChannelPool) {
 /*
 * Main function for driver
 */
+
+
 func main() {
+    logged_in := false
     runtime.GOMAXPROCS(256)
 	flag.Parse()
 
@@ -151,78 +172,96 @@ func main() {
     go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
 
     for {
-
-        var option string
-        fmt.Println("\nOptions: ")
-        fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Create Friend relationship \n5. Exit")
-        fmt.Printf("nexus> ")
-        fmt.Scanln(&option)
-        if option == "create"  || option == "1" {
-            fmt.Println("Enter a create Person query: (first name, last name, username, password)")
-            var first string
-            fmt.Println("First name: ")
-            fmt.Printf("nexus> ")
-            fmt.Scanln(&first)
-
-            var last string
-            fmt.Println("Last name: ")
-            fmt.Printf("nexus> ")
-            fmt.Scanln(&last)
-
+        if logged_in == false {
+            fmt.Println("Log in with your username and password: ")
             var user string
             fmt.Println("Username: ")
-            fmt.Printf("nexus> ")
+            //fmt.Printf("nexus> ")
             fmt.Scanln(&user)
 
             var pass string
             fmt.Println("Password: ")
-            fmt.Printf("nexus> ")
+            //fmt.Printf("nexus> ")
             fmt.Scanln(&pass)
-
-            cm.create_person(first, last, user, pass)
-            time.Sleep(time.Millisecond * 500)
-
-        } else if option == "update" || option == "2"{
-            var user string
-            fmt.Println("Username: ")
-            fmt.Printf("nexus> ")
-            fmt.Scanln(&user)
-
-            var property string
-            fmt.Println("Property: ")
-            fmt.Printf("nexus> ")
-            fmt.Scanln(&property)
-
-            var value string
-            fmt.Println("Value: ")
-            fmt.Printf("nexus> ")
-            fmt.Scanln(&value)
-            //var update = &Update {user, property, value}
-            cm.update_by_username(user, property, value)
-            time.Sleep(time.Millisecond * 500)
-
-        } else if option == "get" || option == "3" {
-            var user string
-            fmt.Println("Username: ")
-            fmt.Printf("nexus> ")
-            fmt.Scanln(&user)
-            cm.get_person(user)
-            time.Sleep(time.Millisecond * 500)
-        } else if option == "friend" || option == "friends" || option == "4" {
-            var user1 string
-            fmt.Println("Username 1: ")
-            fmt.Printf("nexus> ")
-            fmt.Scanln(&user1)
-            var user2 string
-            fmt.Println("Username 2: ")
-            fmt.Printf("nexus> ")
-            fmt.Scanln(&user2)
-            cm.make_friends(user1, user2)
-            time.Sleep(time.Millisecond * 500)
-        } else if option == "e" || option == "exit" || option == "5" {
-            fmt.Println("Exiting... gracefully")
-            return
+            login := cm.login(user,pass)
+            logged_in = login
+            if login == false {
+                fmt.Println("ERROR: incorrect login information for", user, ".")
+            }
         }
+        if logged_in {
+            var option string
+            fmt.Println("\nOptions: ")
+            fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Create Friend relationship \n5. Exit")
+            fmt.Printf("nexus> ")
+            fmt.Scanln(&option)
+            if option == "create"  || option == "1" {
+                fmt.Println("Enter a create Person query: (first name, last name, username, password)")
+                var first string
+                fmt.Println("First name: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&first)
+
+                var last string
+                fmt.Println("Last name: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&last)
+
+                var user string
+                fmt.Println("Username: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&user)
+
+                var pass string
+                fmt.Println("Password: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&pass)
+
+                cm.create_person(first, last, user, pass)
+                time.Sleep(time.Millisecond * 500)
+
+            } else if option == "update" || option == "2"{
+                var user string
+                fmt.Println("Username: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&user)
+
+                var property string
+                fmt.Println("Property: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&property)
+
+                var value string
+                fmt.Println("Value: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&value)
+                //var update = &Update {user, property, value}
+                cm.update_by_username(user, property, value)
+                time.Sleep(time.Millisecond * 500)
+
+            } else if option == "get" || option == "3" {
+                var user string
+                fmt.Println("Username: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&user)
+                cm.get_person(user)
+                time.Sleep(time.Millisecond * 500)
+            } else if option == "friend" || option == "friends" || option == "4" {
+                var user1 string
+                fmt.Println("Username 1: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&user1)
+                var user2 string
+                fmt.Println("Username 2: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&user2)
+                cm.make_friends(user1, user2)
+                time.Sleep(time.Millisecond * 500)
+            } else if option == "e" || option == "exit" || option == "5" {
+                fmt.Println("Exiting... gracefully")
+                return
+            }
     }
+}
     fmt.Println("Done.")
 }
