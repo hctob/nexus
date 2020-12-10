@@ -8,38 +8,6 @@ import (
     "github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
-/*
-*
-* Any structs/helper functions
-*/
-
-type User struct {
-    first_name string
-    last_name string
-    username string
-    password string
-}
-
-type Update struct {
-    username string
-    property string
-    value string
-}
-
-
-type ChannelPool struct {
-    createChannel  chan User     //channel for creating a new user
-    updateChannel chan Update
-    getNodeChannel   chan string
-    created     chan bool
-}
-
-func pool_init() *ChannelPool {
-    var cm ChannelPool
-    cm.createChannel = make(chan User, 128)
-    cm.created = make(chan bool)
-    return &cm  //return pointer to newly initialized ChannelPool struct
-}
 
 var (
 	arg_uri     = flag.String("uri", "bolt://localhost:7687", "The URI for the Nexus database, to connect to it.")
@@ -133,84 +101,27 @@ func drive(uri, username, password string, cm ChannelPool) {
               for result.Next() {
                   fmt.Printf("Node: %s\n\n", result.Record().GetByIndex(0))
               }
+
+        case friends := <-cm.friendChannel:
+            un1 := friends.u_name1
+            un2 := friends.u_name2
+            fmt.Println(un1, " ", un2)
+            result, err := session.Run("MATCH (a:Person{username: $u_name1}) , (b:Person{username: $u_name2}) CREATE (a)-[r:FRIEND]->(b) RETURN r, a.username, b.username", map[string]interface{}{
+                "u_name1" : un1,
+                 "u_name2" : un2,
+            })
+
+          if err != nil {
+              fmt.Println("Error:\n", err)
+              return
+          }
+          for result.Next() {
+              fmt.Printf("%s\ncreated between %s and %s\n", result.Record().GetByIndex(0), result.Record().GetByIndex(1), result.Record().GetByIndex(2))
+          }
         }
     }
 }
 
-/*
-* Creates a Person node with the specified properties
-*/
-func (cm ChannelPool) create_person(first_name, last_name, username, password string) {
-    var user = &User {first_name, last_name, username, password}
-    cm.createChannel <- *user
-}
-
-func (cm ChannelPool) get_person(username string) {
-    cm.getNodeChannel <- username
-}
-
-func create_contact_person(u_name1 string, u_name2 string, s *neo4j.Session){
-  result, err := (*s).Run(`
-        MATCH (a:Person),(b:Person)
-WHERE a.username = '$u_name1' AND b.username = '$u_name2'
-CREATE (a)-[r:Friend]->(b) RETURN r`, nil)
-
-if err != nil {
-    fmt.Println("Error:\n", err)
-    return
-}
-//fmt.Println("query fine\n")
-for result.Next() {
-    fmt.Printf("Updated Person %s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
-}
-
-}
-
-//connects a person to a house
-/*func create_contact_house(u_name string, address string, s *neo4j.Session){
-  result, _ := (*s).Run(`
-        MATCH (a:Person),(h:House)
-WHERE a.username = '$u_name' AND h.address = '$address'
-CREATE (a)-[r:House]->(b) RETURN r`, nil)
-}*/
-
-func (cm ChannelPool) update_by_username(u_name, property, value string) {
-    var up = &Update {u_name, property, value}
-    cm.updateChannel <- *up
-}
-
-func property_query(username, property, value string) string {
-    query := ""
-    switch property {
-    case "first_name":
-        query = fmt.Sprintf("match (n:Person {username: %s}) SET n.first_name = %s, return n", username, value)
-    case "last_name":
-        query = fmt.Sprintf("match (n:Person {username: %s}) SET n.last_name = %s, return n", username, value)
-    case "username":
-        query = fmt.Sprintf("match (n:Person {username: %s}) SET n.last_name = %s, return n", username, value)
-    case "password":
-        query = fmt.Sprintf("match (n:Person {username: %s}) SET n.password = %s, return n", username, value)
-    default:
-        query = "ERROR"
-    }
-    fmt.Println("query: ",query)
-    return query
-}
-
-//update a user's property
-func update_user(u_name string, property string, value string, s *neo4j.Session) {
-  result, err := (*s).Run("MATCH (a:Person{username: $u_name}) SET a.$property = $value RETURN a", map[string]interface{}{
-    "u_name": u_name,
-    "property":   property,
-    "value": value, })
-
-if err != nil {
-    fmt.Println("Error:\n", err)
-    return
-}
-//fmt.Println("query fine\n")
-fmt.Printf("Updated %s %s to %s\n\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
-}
 
 /*
 * Main function for driver
@@ -231,18 +142,19 @@ func main() {
 
     //TODO: use pool_init()
     var cm ChannelPool
-    cm.createChannel = make(chan User, 128)
+    /*cm.createChannel = make(chan User, 128)
     cm.created = make(chan bool)
     cm.updateChannel = make(chan Update, 128)
     cm.getNodeChannel = make(chan string, 128)
-
+    */
+    cm = pool_init()
     go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
 
     for {
 
         var option string
         fmt.Println("\nOptions: ")
-        fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Exit")
+        fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Create Friend relationship \n5. Exit")
         fmt.Printf("nexus> ")
         fmt.Scanln(&option)
         if option == "create"  || option == "1" {
@@ -289,7 +201,7 @@ func main() {
             cm.update_by_username(user, property, value)
             time.Sleep(time.Millisecond * 500)
 
-        } else if option == "e" || option == "exit" || option == "4" {
+        } else if option == "e" || option == "exit" || option == "5" {
             fmt.Println("Exiting... gracefully")
             return
         } else if option == "get" || option == "3" {
@@ -298,6 +210,17 @@ func main() {
             fmt.Printf("nexus> ")
             fmt.Scanln(&user)
             cm.get_person(user)
+            time.Sleep(time.Millisecond * 500)
+        } else if option == "friend" || option == "friends" || option == "4" {
+            var user1 string
+            fmt.Println("Username 1: ")
+            fmt.Printf("nexus> ")
+            fmt.Scanln(&user1)
+            var user2 string
+            fmt.Println("Username 2: ")
+            fmt.Printf("nexus> ")
+            fmt.Scanln(&user2)
+            cm.make_friends(user1, user2)
             time.Sleep(time.Millisecond * 500)
         }
     }
