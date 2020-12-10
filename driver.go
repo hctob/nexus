@@ -3,17 +3,22 @@ package main
 import (
     "fmt"
     "flag"
-    "time"
+    //"time"
     "runtime"
     "github.com/neo4j/neo4j-go-driver/neo4j"
+    "net/http"
+    //"encoding/json"
+    //"io/ioutil"
+    //"log"
 )
 
 
 var (
 	arg_uri     = flag.String("uri", "bolt://localhost:7687", "The URI for the Nexus database, to connect to it.")
-    arg_username_raw     = flag.String("u", "test", "Usernames are unique identifiers for database users.")
-    arg_password_raw     = flag.String("p", "test", "Unencrypted password for selected username.")
-
+    arg_username_raw     = flag.String("u", "neo4j", "Usernames are unique identifiers for database users.")
+    arg_password_raw     = flag.String("p", "cs476", "Unencrypted password for selected username.")
+    cm_global * ChannelPool
+    logged_in = false
     totalQueries int64
 )
 
@@ -63,8 +68,8 @@ func drive(uri, username, password string, cm ChannelPool) {
             //cm.created <- true
         case update := <-cm.updateChannel:
             //update_user(update.username, update.property, update.value, &session)
-            /*prop := "n." + update.property
-            fmt.Println(prop)*/
+            prop := "n." + update.property
+            /*fmt.Println(prop)*/
 
             v := update.value
             un := update.username
@@ -140,6 +145,40 @@ func drive(uri, username, password string, cm ChannelPool) {
     }
 }
 
+type Login_Frontend struct {
+    username string `json: username`
+    password string `json: password`
+}
+
+func get_login(w http.ResponseWriter, req *http.Request){
+  if req.Method == http.MethodPost{
+    /*w.Header().Set("Content-Type", "application/json")
+    body, _ := ioutil.ReadAll(req.Body)
+    //decoder := json.NewDecoder(req.Body)
+
+    fmt.Println(body)
+    var user Login_Frontend
+    user.username = r.FormValue("username")
+    user.password = r.FormValue("password")
+    //err := decoder.Decode(&user)
+    /*if err != nil {
+		    panic(err)
+	  }*/
+    /*err := json.Unmarshal(body, &user)
+    if err != nil{
+      log.Fatal(err)
+    }*/
+    fmt.Println("working ", req.Body, "\n")
+    login := (*cm_global).login(string(req.FormValue("username")), string(req.FormValue("password")))
+    logged_in = login
+    if login == false {
+        fmt.Println("ERROR: incorrect login information")
+    }
+    fmt.Println("Login worked\n")
+  /*} else if(req.Method == http.MethodGet){
+    http.ServeFile(w, req, "nexus-frontend/login-temp.html")
+  */}
+}
 
 /*
 * Main function for driver
@@ -147,7 +186,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 
 
 func main() {
-    logged_in := false
+
     runtime.GOMAXPROCS(256)
 	flag.Parse()
 
@@ -169,9 +208,15 @@ func main() {
     cm.getNodeChannel = make(chan string, 128)
     */
     cm = pool_init()
+    cm_global = &cm
     go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
 
-    for {
+    //cm.create_person("Will", "Kennedy", "neo4j", "neo4j")
+    http.Handle("/", http.FileServer(http.Dir("./nexus-frontend")))
+    http.HandleFunc("/login", get_login)
+    http.ListenAndServe(":8090", nil)
+
+    /*for {
         if logged_in == false {
             fmt.Println("Log in with your username and password: ")
             var user string
@@ -261,7 +306,7 @@ func main() {
                 fmt.Println("Exiting... gracefully")
                 return
             }
-    }
-}
+    }*/
+//}
     fmt.Println("Done.")
 }
