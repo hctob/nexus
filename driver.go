@@ -15,6 +15,8 @@ var (
 	arg_uri          = flag.String("uri", "bolt://localhost:7687", "The URI for the Nexus database, to connect to it.")
 	arg_username_raw = flag.String("u", "test", "Usernames are unique identifiers for database users.")
 	arg_password_raw = flag.String("p", "test", "Unencrypted password for selected username.")
+    test_nodes_input = flag.String("-test-create", "", "JSON data for generating test Person nodes.")
+    test_friends_input = flag.String("-test-create", "", "JSON data for generating friend relationships.")
 
 	totalQueries int64
 )
@@ -254,6 +256,14 @@ func main() {
 	*/
 	cm = pool_init()
 	go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
+    if *test_nodes_input != "" {
+        //TODO: add JSON parsing to generate a bunch of Person nodes in the database.
+        fmt.Println("Generating Person nodes...")
+    }
+    if *test_friends_input != "" {
+        //TODO: add JSON parsing to generate a bunch of Friend relationships between generated nodes.
+        fmt.Println("Generating FRIEND relationships between random nodes...")
+    }
 	var current_user User
 	for {
 		if logged_in == false {
