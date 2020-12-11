@@ -254,7 +254,7 @@ func main() {
 	  cm.getNodeChannel = make(chan string, 128)
 	*/
 	cm = pool_init()
-	go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
+	go drive(*arg_uri, *arg_username_raw, *arg_password_raw, cm)
     /*if *test_nodes_input != "" {
         //TODO: add JSON parsing to generate a bunch of Person nodes in the database.
         fmt.Println("Generating Person nodes...")
