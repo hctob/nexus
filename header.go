@@ -31,6 +31,11 @@ type Login struct {
     password string
 }
 
+type House struct {
+    username string
+    address string
+}
+
 
 type ChannelPool struct {
     createChannel  chan User     //channel for creating a new user
@@ -39,6 +44,9 @@ type ChannelPool struct {
     friendChannel   chan Friends
     loginChannel    chan Login
     loginGood     chan bool
+    createHouse   chan House
+    get_friends_list chan string
+    send_friends_list   chan map[string]User
 }
 
 func pool_init() ChannelPool {
@@ -49,6 +57,9 @@ func pool_init() ChannelPool {
     cm.getNodeChannel = make(chan string, 128)
     cm.friendChannel = make(chan Friends, 128)
     cm.loginChannel = make(chan Login, 128)
+    cm.get_friends_list = make(chan string, 128)
+    cm.send_friends_list = make(chan map[string]User, 128)
+    cm.createHouse = make(chan House, 128)
     return cm  //return pointer to newly initialized ChannelPool struct
 }
 /*
@@ -108,6 +119,16 @@ func (cm ChannelPool) login(username, password string) bool {
     cm.loginChannel <- *logInfo
     good := <-cm.loginGood
     return good
+}
+
+func (cm ChannelPool) create_house(username, address string){
+    house := &House{username, address}
+    cm.createHouse <- *house
+}
+
+func (cm ChannelPool) get_friends(username string) {
+    cm.get_friends_list <- username
+    //usermap := make(map[string]User)
 }
 
 //connects a person to a house

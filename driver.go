@@ -5,6 +5,7 @@ import (
     "flag"
     "time"
     "runtime"
+    "strings"
     "github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
@@ -61,10 +62,38 @@ func drive(uri, username, password string, cm ChannelPool) {
             	fmt.Printf("\nCreated Person '%s %s' with username = '%s'\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
             }
             //cm.created <- true
+        case house := <-cm.createHouse:
+            un := house.username
+            addr := house.address
+            result, err := session.Run("match (n:Person{username: $un}) create (h:House{address: $addr}) create (n)-[r:HOUSE]->(h) return h.address", map[string]interface{}{
+                "un": un,
+                "addr": addr,
+            })
+            if err != nil {
+                fmt.Println("Error:\n", err)
+                return
+            }
+            //fmt.Println("query fine\n")
+            for result.Next() {
+            	fmt.Printf("\nCreated House with address %s\n", result.Record().GetByIndex(0).(string))
+            }
+        case username := <-cm.get_friends_list:
+            result, err := session.Run("match (n:Person{username: $username})-[r:FRIEND]->(f) return f.first_name, f.last_name, f.username", map[string]interface{}{
+            "username": username,
+        })
+            if err != nil {
+                fmt.Println("Error:\n", err)
+                return
+            }
+            //fmt.Println("query fine\n")
+            fmt.Printf("\nFriends list of %s: \n", username)
+            for result.Next() {
+                fmt.Printf("%s %s: %s\n", result.Record().GetByIndex(0).(string),result.Record().GetByIndex(1).(string),result.Record().GetByIndex(2).(string))
+            }
         case update := <-cm.updateChannel:
             //update_user(update.username, update.property, update.value, &session)
-            /*prop := "n." + update.property
-            fmt.Println(prop)*/
+            prop := "n." + update.property
+            //fmt.Println(prop)
 
             v := update.value
             un := update.username
@@ -192,10 +221,10 @@ func main() {
         if logged_in {
             var option string
             fmt.Println("\nOptions: ")
-            fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Create Friend relationship \n5. Exit")
+            fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Create Friend relationship\n5. View friends list of a given user\n6. Create/join a house\n7. Exit")
             fmt.Printf("nexus> ")
             fmt.Scanln(&option)
-            if option == "create"  || option == "1" {
+            if strings.ToLower(option) == "create"  || option == "1" {
                 fmt.Println("Enter a create Person query: (first name, last name, username, password)")
                 var first string
                 fmt.Println("First name: ")
@@ -220,7 +249,7 @@ func main() {
                 cm.create_person(first, last, user, pass)
                 time.Sleep(time.Millisecond * 500)
 
-            } else if option == "update" || option == "2"{
+            } else if strings.ToLower(option) == "update" || option == "2"{
                 var user string
                 fmt.Println("Username: ")
                 fmt.Printf("nexus> ")
@@ -239,14 +268,14 @@ func main() {
                 cm.update_by_username(user, property, value)
                 time.Sleep(time.Millisecond * 500)
 
-            } else if option == "get" || option == "3" {
+            } else if strings.ToLower(option) == "get" || option == "3" {
                 var user string
                 fmt.Println("Username: ")
                 fmt.Printf("nexus> ")
                 fmt.Scanln(&user)
                 cm.get_person(user)
                 time.Sleep(time.Millisecond * 500)
-            } else if option == "friend" || option == "friends" || option == "4" {
+            } else if strings.ToLower(option) == "friend" || strings.ToLower(option) == "friends" || option == "4" {
                 var user1 string
                 fmt.Println("Username 1: ")
                 fmt.Printf("nexus> ")
@@ -257,7 +286,40 @@ func main() {
                 fmt.Scanln(&user2)
                 cm.make_friends(user1, user2)
                 time.Sleep(time.Millisecond * 500)
-            } else if option == "e" || option == "exit" || option == "5" {
+            } else if strings.ToLower(option) == "list" || strings.ToLower(option) == "friends_list" || option == "5" {
+                var username string
+                fmt.Println("Username: ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&username)
+                cm.get_friends(username)
+                time.Sleep(time.Millisecond * 500)
+
+            } else if strings.ToLower(option) == "house" || option == "6" {
+                var option2 string
+                fmt.Println("1. create (username, address)\n2. join (username) ")
+                fmt.Printf("nexus> ")
+                fmt.Scanln(&option2)
+
+                if strings.ToLower(option2) == "create" || option2 == "1" {
+                    var username string
+                    fmt.Println("Username: ")
+                    fmt.Printf("nexus> ")
+                    fmt.Scanln(&username)
+                    fmt.Println("Address: ")
+                    fmt.Printf("nexus> ")
+                    var address string
+                    fmt.Scanln(&address)
+                    cm.create_house(username, address)
+                    time.Sleep(time.Millisecond * 500)
+                } else if strings.ToLower(option2) == "join" || option2 == "2" {
+                    var username string
+                    fmt.Println("Username: ")
+                    fmt.Printf("nexus> ")
+                    fmt.Scanln(&username)
+                    //cm.joinHouse(username)
+                }
+
+                } else if strings.ToLower(option) == "e" || strings.ToLower(option) == "exit" || option == "7" {
                 fmt.Println("Exiting... gracefully")
                 return
             }
