@@ -46,7 +46,7 @@ for p in names:
     dataset.append(person)
     house_index = (house_index + 1) % len(houses)
 
-person_idx = 0
+person_idx = 1
 for person in dataset:
      friends = {"friends": []}
      for i in range(0, num_friends):
