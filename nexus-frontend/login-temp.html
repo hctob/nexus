@@ -5,7 +5,7 @@
     <title></title>
   </head>
   <body>
-    <form action="/login" method="POST" enctype='text/plain'>
+    <!--<form action="/login" method="POST" enctype='text/plain'>-->
 
       <div class="container">
         <label for="username"><b>Username</b></label>
@@ -17,7 +17,7 @@
         <button type="submit" id="sub">Login</button>
       </div>
 
-    </form>
+    <!--</form>-->
     <script>
     document.getElementById("sub").addEventListener("click", ()=>{
       //alert("Hello World!");
@@ -30,7 +30,7 @@
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.onreadystatechange = function(){
         if(xhr.readyState == 4 && xhr.status == 200){
-          result.innerHTML = this.responseText;
+          //result.innerHTML = this.responseText;
         }
       }
       console.log("working 3");

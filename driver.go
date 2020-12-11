@@ -172,7 +172,8 @@ func get_login(w http.ResponseWriter, req *http.Request){
     fmt.Println("working")
     cookie := http.Cookie{Name: string(obj["Username"])}
     http.SetCookie(w, &cookie)
-    http.Redirect(w, req, "http://localhost:8090/nexus-frontend/main-page.html", http.StatusSeeOther)
+    http.Redirect(w, req, "http://localhost:8090/main-page.html", 301)
+    //http.ServeFile(w, req, "/nexus-frontend/main-page.html")
     fmt.Println("working 2")
   }
 }
