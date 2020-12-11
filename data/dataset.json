@@ -2,601 +2,1497 @@
     {
         "first_name": "Zane",
         "last_name": "Massey",
-        "username": "ZMassey",
-        "password": "password"
+        "username": "zmassey",
+        "password": "password",
+        "street": "P.O. Box 455, 4692 Dictum Ave",
+        "city": "Glenrothes",
+        "zip": "17241",
+        "friends": [
+            "acortez",
+            "kpatterson",
+            "kvillarreal"
+        ]
     },
     {
         "first_name": "Aaron",
         "last_name": "Walsh",
-        "username": "AWalsh",
-        "password": "password"
+        "username": "awalsh",
+        "password": "password",
+        "street": "7616 Vestibulum Street",
+        "city": "Owen Sound",
+        "zip": "82534",
+        "friends": [
+            "scunningham",
+            "roneill",
+            "vmccormick",
+            "qbarton"
+        ]
     },
     {
         "first_name": "Orson",
         "last_name": "Phillips",
-        "username": "OPhillips",
-        "password": "password"
+        "username": "ophillips",
+        "password": "password",
+        "street": "9818 Nunc. St.",
+        "city": "Pukekohe",
+        "zip": "63174",
+        "friends": [
+            "llane",
+            "nochoa",
+            "calford",
+            "afleming"
+        ]
     },
     {
         "first_name": "Geoffrey",
         "last_name": "Warner",
-        "username": "GWarner",
-        "password": "password"
+        "username": "gwarner",
+        "password": "password",
+        "street": "309-390 Etiam Av.",
+        "city": "New Galloway",
+        "zip": "9655",
+        "friends": [
+            "cramirez",
+            "gjames",
+            "cweber",
+            "rpate"
+        ]
     },
     {
         "first_name": "Gavin",
         "last_name": "Higgins",
-        "username": "GHiggins",
-        "password": "password"
+        "username": "ghiggins",
+        "password": "password",
+        "street": "832-5100 Commodo Road",
+        "city": "Crecchio",
+        "zip": "83114",
+        "friends": [
+            "jdavid",
+            "bhooper",
+            "knixon",
+            "tmckenzie"
+        ]
     },
     {
         "first_name": "Rhiannon",
         "last_name": "Oneill",
-        "username": "ROneill",
-        "password": "password"
+        "username": "roneill",
+        "password": "password",
+        "street": "2215 Nulla Rd.",
+        "city": "Biggleswade",
+        "zip": "68959",
+        "friends": [
+            "cgould",
+            "gallison",
+            "mfrye",
+            "hstout"
+        ]
     },
     {
         "first_name": "Renee",
         "last_name": "Guzman",
-        "username": "RGuzman",
-        "password": "password"
+        "username": "rguzman",
+        "password": "password",
+        "street": "Ap #644-7587 Dictum Av.",
+        "city": "Castelbaldo",
+        "zip": "54935",
+        "friends": [
+            "ghiggins",
+            "aknowles",
+            "zday",
+            "jhardy"
+        ]
     },
     {
         "first_name": "Logan",
         "last_name": "Odom",
-        "username": "LOdom",
-        "password": "password"
+        "username": "lodom",
+        "password": "password",
+        "street": "P.O. Box 549, 7687 Hendrerit Road",
+        "city": "Kolomna",
+        "zip": "268849",
+        "friends": [
+            "tingram",
+            "kmcknight",
+            "roliver",
+            "lmarsh"
+        ]
     },
     {
         "first_name": "Keiko",
         "last_name": "Jennings",
-        "username": "KJennings",
-        "password": "password"
+        "username": "kjennings",
+        "password": "password",
+        "street": "2001 Orci Ave",
+        "city": "Burns Lake",
+        "zip": "42630-18868",
+        "friends": [
+            "kdonaldson",
+            "jcalhoun",
+            "urichardson",
+            "dramos"
+        ]
     },
     {
         "first_name": "Kessie",
         "last_name": "Mcknight",
-        "username": "KMcknight",
-        "password": "password"
+        "username": "kmcknight",
+        "password": "password",
+        "street": "597-469 Egestas. Rd.",
+        "city": "Vance",
+        "zip": "38806-370",
+        "friends": [
+            "apreston",
+            "dramsey",
+            "tnelson",
+            "cflynn"
+        ]
     },
     {
         "first_name": "Cadman",
         "last_name": "Alford",
-        "username": "CAlford",
-        "password": "password"
+        "username": "calford",
+        "password": "password",
+        "street": "P.O. Box 139, 406 Aenean Road",
+        "city": "Noida",
+        "zip": "9659",
+        "friends": [
+            "wwiley",
+            "bmeadows",
+            "fwilder",
+            "gwarner"
+        ]
     },
     {
         "first_name": "Arsenio",
         "last_name": "Mcclain",
-        "username": "AMcclain",
-        "password": "password"
+        "username": "amcclain",
+        "password": "password",
+        "street": "957-9066 Sed St.",
+        "city": "Las Condes",
+        "zip": "J8A 5G4",
+        "friends": [
+            "eharrell",
+            "btravis",
+            "mmacdonald",
+            "jwhitfield"
+        ]
     },
     {
         "first_name": "Hayes",
         "last_name": "Mosley",
-        "username": "HMosley",
-        "password": "password"
+        "username": "hmosley",
+        "password": "password",
+        "street": "Ap #276-704 Magna. Avenue",
+        "city": "Kohlu",
+        "zip": "20109",
+        "friends": [
+            "kjennings",
+            "cmarshall",
+            "smckee",
+            "akaufman"
+        ]
     },
     {
         "first_name": "Aquila",
         "last_name": "Francis",
-        "username": "AFrancis",
-        "password": "password"
+        "username": "afrancis",
+        "password": "password",
+        "street": "Ap #908-2325 At St.",
+        "city": "Monteu Roero",
+        "zip": "50-749",
+        "friends": [
+            "dluna",
+            "afrancis",
+            "gwoods",
+            "cwebster"
+        ]
     },
     {
         "first_name": "Uriah",
         "last_name": "Richardson",
-        "username": "URichardson",
-        "password": "password"
+        "username": "urichardson",
+        "password": "password",
+        "street": "Ap #135-8084 Quam, St.",
+        "city": "Zhukovsky",
+        "zip": "26530",
+        "friends": [
+            "hcooper",
+            "mdonaldson",
+            "khammond",
+            "upruitt"
+        ]
     },
     {
         "first_name": "Riley",
         "last_name": "Pate",
-        "username": "RPate",
-        "password": "password"
+        "username": "rpate",
+        "password": "password",
+        "street": "6680 Et Ave",
+        "city": "Sigillo",
+        "zip": "5953",
+        "friends": [
+            "cdowns",
+            "csantiago",
+            "ophillips",
+            "dglass"
+        ]
     },
     {
         "first_name": "Aidan",
         "last_name": "Hoover",
-        "username": "AHoover",
-        "password": "password"
+        "username": "ahoover",
+        "password": "password",
+        "street": "P.O. Box 196, 9798 In Street",
+        "city": "Ried im Innkreis",
+        "zip": "Z7282",
+        "friends": [
+            "gnorton",
+            "ahubbard",
+            "mquinn",
+            "lodom"
+        ]
     },
     {
         "first_name": "MacKensie",
         "last_name": "Graves",
-        "username": "MGraves",
-        "password": "password"
+        "username": "mgraves",
+        "password": "password",
+        "street": "6085 Cursus Street",
+        "city": "Saint Andr\u00ef\u00bf\u00bd",
+        "zip": "43795",
+        "friends": [
+            "jvillarreal",
+            "ssavage",
+            "mewing",
+            "asweet"
+        ]
     },
     {
         "first_name": "Kylynn",
         "last_name": "Hammond",
-        "username": "KHammond",
-        "password": "password"
+        "username": "khammond",
+        "password": "password",
+        "street": "Ap #777-8749 Egestas. Street",
+        "city": "Aiseau-Presles",
+        "zip": "61111",
+        "friends": [
+            "hmosley",
+            "modom",
+            "eashley",
+            "bpollard"
+        ]
     },
     {
         "first_name": "Cairo",
         "last_name": "Flynn",
-        "username": "CFlynn",
-        "password": "password"
+        "username": "cflynn",
+        "password": "password",
+        "street": "P.O. Box 850, 7044 Luctus St.",
+        "city": "Austin",
+        "zip": "40504",
+        "friends": [
+            "sferguson",
+            "mgraves",
+            "tfranco",
+            "dglenn"
+        ]
     },
     {
         "first_name": "Cyrus",
         "last_name": "Gould",
-        "username": "CGould",
-        "password": "password"
+        "username": "cgould",
+        "password": "password",
+        "street": "Ap #904-7931 Et, Road",
+        "city": "Oostakker",
+        "zip": "B2Z 4Z8",
+        "friends": [
+            "gmendoza",
+            "awalsh",
+            "sallen",
+            "fnorris"
+        ]
     },
     {
         "first_name": "Aurora",
         "last_name": "Cortez",
-        "username": "ACortez",
-        "password": "password"
+        "username": "acortez",
+        "password": "password",
+        "street": "Ap #794-3102 Libero. Rd.",
+        "city": "Lahore",
+        "zip": "87-538",
+        "friends": [
+            "lmelton",
+            "kkeith",
+            "rguzman",
+            "rfarley"
+        ]
     },
     {
         "first_name": "Shay",
         "last_name": "Allen",
-        "username": "SAllen",
-        "password": "password"
+        "username": "sallen",
+        "password": "password",
+        "street": "7630 Nec Street",
+        "city": "Neelum Valley",
+        "zip": "64-918",
+        "friends": [
+            "kcote",
+            "croy",
+            "hdouglas",
+            "amcclain"
+        ]
     },
     {
         "first_name": "Daniel",
         "last_name": "Glass",
-        "username": "DGlass",
-        "password": "password"
+        "username": "dglass",
+        "password": "password",
+        "street": "P.O. Box 576, 9436 Tellus St.",
+        "city": "Minto",
+        "zip": "321089",
+        "friends": [
+            "kpeters",
+            "bnorton",
+            "proy",
+            "wnewman"
+        ]
     },
     {
         "first_name": "Emmanuel",
         "last_name": "Harrell",
-        "username": "EHarrell",
-        "password": "password"
+        "username": "eharrell",
+        "password": "password",
+        "street": "Ap #960-510 Amet Rd.",
+        "city": "Watson Lake",
+        "zip": "70339-815",
+        "friends": [
+            "ahoover",
+            "mlindsey",
+            "kbates",
+            "bpickett"
+        ]
     },
     {
         "first_name": "Aaron",
         "last_name": "Knowles",
-        "username": "AKnowles",
-        "password": "password"
+        "username": "aknowles",
+        "password": "password",
+        "street": "601-6318 Malesuada St.",
+        "city": "Bromyard",
+        "zip": "3525 DT",
+        "friends": [
+            "acortez",
+            "kpatterson",
+            "kvillarreal"
+        ]
     },
     {
         "first_name": "Vivien",
         "last_name": "Mccormick",
-        "username": "VMccormick",
-        "password": "password"
+        "username": "vmccormick",
+        "password": "password",
+        "street": "1074 Enim St.",
+        "city": "Roksem",
+        "zip": "41218",
+        "friends": [
+            "scunningham",
+            "roneill",
+            "vmccormick",
+            "qbarton"
+        ]
     },
     {
         "first_name": "Reece",
         "last_name": "Farley",
-        "username": "RFarley",
-        "password": "password"
+        "username": "rfarley",
+        "password": "password",
+        "street": "Ap #988-7463 Erat. Ave",
+        "city": "St. David's",
+        "zip": "797673",
+        "friends": [
+            "llane",
+            "nochoa",
+            "calford",
+            "afleming"
+        ]
     },
     {
         "first_name": "Juliet",
         "last_name": "Villarreal",
-        "username": "JVillarreal",
-        "password": "password"
+        "username": "jvillarreal",
+        "password": "password",
+        "street": "Ap #677-1533 Nunc St.",
+        "city": "Wepion",
+        "zip": "53324",
+        "friends": [
+            "cramirez",
+            "gjames",
+            "cweber",
+            "rpate"
+        ]
     },
     {
         "first_name": "Carly",
         "last_name": "Marshall",
-        "username": "CMarshall",
-        "password": "password"
+        "username": "cmarshall",
+        "password": "password",
+        "street": "Ap #351-7170 Et Street",
+        "city": "Leipzig",
+        "zip": "51279-22555",
+        "friends": [
+            "jdavid",
+            "bhooper",
+            "knixon",
+            "tmckenzie"
+        ]
     },
     {
         "first_name": "Rebekah",
         "last_name": "Oliver",
-        "username": "ROliver",
-        "password": "password"
+        "username": "roliver",
+        "password": "password",
+        "street": "259-4787 Nunc Ave",
+        "city": "Outremont",
+        "zip": "75357-47383",
+        "friends": [
+            "cgould",
+            "gallison",
+            "mfrye",
+            "hstout"
+        ]
     },
     {
         "first_name": "Arthur",
         "last_name": "Fleming",
-        "username": "AFleming",
-        "password": "password"
+        "username": "afleming",
+        "password": "password",
+        "street": "Ap #920-5477 Metus Ave",
+        "city": "Ife",
+        "zip": "15532-44092",
+        "friends": [
+            "ghiggins",
+            "aknowles",
+            "zday",
+            "jhardy"
+        ]
     },
     {
         "first_name": "Kennedy",
         "last_name": "Peters",
-        "username": "KPeters",
-        "password": "password"
+        "username": "kpeters",
+        "password": "password",
+        "street": "8208 Odio Ave",
+        "city": "San Carlos",
+        "zip": "35986",
+        "friends": [
+            "tingram",
+            "kmcknight",
+            "roliver",
+            "lmarsh"
+        ]
     },
     {
         "first_name": "Melyssa",
         "last_name": "Odom",
-        "username": "MOdom",
-        "password": "password"
+        "username": "modom",
+        "password": "password",
+        "street": "P.O. Box 595, 4033 Nonummy St.",
+        "city": "Bajardo",
+        "zip": "5186",
+        "friends": [
+            "kdonaldson",
+            "jcalhoun",
+            "urichardson",
+            "dramos"
+        ]
     },
     {
         "first_name": "Griffith",
         "last_name": "Woods",
-        "username": "GWoods",
-        "password": "password"
+        "username": "gwoods",
+        "password": "password",
+        "street": "294-5812 Fringilla, Ave",
+        "city": "Piracicaba",
+        "zip": "870896",
+        "friends": [
+            "apreston",
+            "dramsey",
+            "tnelson",
+            "cflynn"
+        ]
     },
     {
         "first_name": "Demetria",
         "last_name": "Ramos",
-        "username": "DRamos",
-        "password": "password"
+        "username": "dramos",
+        "password": "password",
+        "street": "5128 Aliquet St.",
+        "city": "North Battleford",
+        "zip": "867697",
+        "friends": [
+            "wwiley",
+            "bmeadows",
+            "fwilder",
+            "gwarner"
+        ]
     },
     {
         "first_name": "Josiah",
         "last_name": "David",
-        "username": "JDavid",
-        "password": "password"
+        "username": "jdavid",
+        "password": "password",
+        "street": "Ap #228-6654 A, Avenue",
+        "city": "Quilleco",
+        "zip": "962013",
+        "friends": [
+            "eharrell",
+            "btravis",
+            "mmacdonald",
+            "jwhitfield"
+        ]
     },
     {
         "first_name": "Miriam",
         "last_name": "Lindsey",
-        "username": "MLindsey",
-        "password": "password"
+        "username": "mlindsey",
+        "password": "password",
+        "street": "P.O. Box 889, 9900 Risus. Av.",
+        "city": "Suarlee",
+        "zip": "271980",
+        "friends": [
+            "kjennings",
+            "cmarshall",
+            "smckee",
+            "akaufman"
+        ]
     },
     {
         "first_name": "Todd",
         "last_name": "Franco",
-        "username": "TFranco",
-        "password": "password"
+        "username": "tfranco",
+        "password": "password",
+        "street": "6294 Malesuada Avenue",
+        "city": "Lleida",
+        "zip": "974491",
+        "friends": [
+            "dluna",
+            "afrancis",
+            "gwoods",
+            "cwebster"
+        ]
     },
     {
         "first_name": "Uriah",
         "last_name": "Pruitt",
-        "username": "UPruitt",
-        "password": "password"
+        "username": "upruitt",
+        "password": "password",
+        "street": "Ap #432-6650 Mollis. Road",
+        "city": "Bellevue",
+        "zip": "64-763",
+        "friends": [
+            "hcooper",
+            "mdonaldson",
+            "khammond",
+            "upruitt"
+        ]
     },
     {
         "first_name": "Winter",
         "last_name": "Wiley",
-        "username": "WWiley",
-        "password": "password"
+        "username": "wwiley",
+        "password": "password",
+        "street": "P.O. Box 455, 4692 Dictum Ave",
+        "city": "Glenrothes",
+        "zip": "17241",
+        "friends": [
+            "cdowns",
+            "csantiago",
+            "ophillips",
+            "dglass"
+        ]
     },
     {
         "first_name": "Garth",
         "last_name": "Allison",
-        "username": "GAllison",
-        "password": "password"
+        "username": "gallison",
+        "password": "password",
+        "street": "7616 Vestibulum Street",
+        "city": "Owen Sound",
+        "zip": "82534",
+        "friends": [
+            "gnorton",
+            "ahubbard",
+            "mquinn",
+            "lodom"
+        ]
     },
     {
         "first_name": "Keaton",
         "last_name": "Patterson",
-        "username": "KPatterson",
-        "password": "password"
+        "username": "kpatterson",
+        "password": "password",
+        "street": "9818 Nunc. St.",
+        "city": "Pukekohe",
+        "zip": "63174",
+        "friends": [
+            "jvillarreal",
+            "ssavage",
+            "mewing",
+            "asweet"
+        ]
     },
     {
         "first_name": "Flynn",
         "last_name": "Norris",
-        "username": "FNorris",
-        "password": "password"
+        "username": "fnorris",
+        "password": "password",
+        "street": "309-390 Etiam Av.",
+        "city": "New Galloway",
+        "zip": "9655",
+        "friends": [
+            "hmosley",
+            "modom",
+            "eashley",
+            "bpollard"
+        ]
     },
     {
         "first_name": "Georgia",
-        "last_name": "Warner",
-        "username": "GWarner",
-        "password": "password"
+        "last_name": "Norton",
+        "username": "gnorton",
+        "password": "password",
+        "street": "832-5100 Commodo Road",
+        "city": "Crecchio",
+        "zip": "83114",
+        "friends": [
+            "sferguson",
+            "mgraves",
+            "tfranco",
+            "dglenn"
+        ]
     },
     {
         "first_name": "Buckminster",
         "last_name": "Travis",
-        "username": "BTravis",
-        "password": "password"
+        "username": "btravis",
+        "password": "password",
+        "street": "2215 Nulla Rd.",
+        "city": "Biggleswade",
+        "zip": "68959",
+        "friends": [
+            "gmendoza",
+            "awalsh",
+            "sallen",
+            "fnorris"
+        ]
     },
     {
         "first_name": "Zoe",
         "last_name": "Day",
-        "username": "ZDay",
-        "password": "password"
+        "username": "zday",
+        "password": "password",
+        "street": "Ap #644-7587 Dictum Av.",
+        "city": "Castelbaldo",
+        "zip": "54935",
+        "friends": [
+            "lmelton",
+            "kkeith",
+            "rguzman",
+            "rfarley"
+        ]
     },
     {
         "first_name": "Quail",
         "last_name": "Barton",
-        "username": "QBarton",
-        "password": "password"
+        "username": "qbarton",
+        "password": "password",
+        "street": "P.O. Box 549, 7687 Hendrerit Road",
+        "city": "Kolomna",
+        "zip": "268849",
+        "friends": [
+            "kcote",
+            "croy",
+            "hdouglas",
+            "amcclain"
+        ]
     },
     {
         "first_name": "Kenneth",
         "last_name": "Cote",
-        "username": "KCote",
-        "password": "password"
+        "username": "kcote",
+        "password": "password",
+        "street": "2001 Orci Ave",
+        "city": "Burns Lake",
+        "zip": "42630-18868",
+        "friends": [
+            "kpeters",
+            "bnorton",
+            "proy",
+            "wnewman"
+        ]
     },
     {
         "first_name": "Simone",
         "last_name": "Savage",
-        "username": "SSavage",
-        "password": "password"
+        "username": "ssavage",
+        "password": "password",
+        "street": "597-469 Egestas. Rd.",
+        "city": "Vance",
+        "zip": "38806-370",
+        "friends": [
+            "ahoover",
+            "mlindsey",
+            "kbates",
+            "bpickett"
+        ]
     },
     {
         "first_name": "Shay",
         "last_name": "Mckee",
-        "username": "SMckee",
-        "password": "password"
+        "username": "smckee",
+        "password": "password",
+        "street": "P.O. Box 139, 406 Aenean Road",
+        "city": "Noida",
+        "zip": "9659",
+        "friends": [
+            "acortez",
+            "kpatterson",
+            "kvillarreal"
+        ]
     },
     {
         "first_name": "Lucas",
         "last_name": "Marsh",
-        "username": "LMarsh",
-        "password": "password"
+        "username": "lmarsh",
+        "password": "password",
+        "street": "957-9066 Sed St.",
+        "city": "Las Condes",
+        "zip": "J8A 5G4",
+        "friends": [
+            "scunningham",
+            "roneill",
+            "vmccormick",
+            "qbarton"
+        ]
     },
     {
         "first_name": "Clarke",
         "last_name": "Ramirez",
-        "username": "CRamirez",
-        "password": "password"
+        "username": "cramirez",
+        "password": "password",
+        "street": "Ap #276-704 Magna. Avenue",
+        "city": "Kohlu",
+        "zip": "20109",
+        "friends": [
+            "llane",
+            "nochoa",
+            "calford",
+            "afleming"
+        ]
     },
     {
         "first_name": "Beau",
         "last_name": "Norton",
-        "username": "BNorton",
-        "password": "password"
+        "username": "bnorton",
+        "password": "password",
+        "street": "Ap #908-2325 At St.",
+        "city": "Monteu Roero",
+        "zip": "50-749",
+        "friends": [
+            "cramirez",
+            "gjames",
+            "cweber",
+            "rpate"
+        ]
     },
     {
         "first_name": "Eden",
         "last_name": "Ashley",
-        "username": "EAshley",
-        "password": "password"
+        "username": "eashley",
+        "password": "password",
+        "street": "Ap #135-8084 Quam, St.",
+        "city": "Zhukovsky",
+        "zip": "26530",
+        "friends": [
+            "jdavid",
+            "bhooper",
+            "knixon",
+            "tmckenzie"
+        ]
     },
     {
         "first_name": "Charde",
         "last_name": "Webster",
-        "username": "CWebster",
-        "password": "password"
+        "username": "cwebster",
+        "password": "password",
+        "street": "6680 Et Ave",
+        "city": "Sigillo",
+        "zip": "5953",
+        "friends": [
+            "cgould",
+            "gallison",
+            "mfrye",
+            "hstout"
+        ]
     },
     {
         "first_name": "Autumn",
         "last_name": "Preston",
-        "username": "APreston",
-        "password": "password"
+        "username": "apreston",
+        "password": "password",
+        "street": "P.O. Box 196, 9798 In Street",
+        "city": "Ried im Innkreis",
+        "zip": "Z7282",
+        "friends": [
+            "ghiggins",
+            "aknowles",
+            "zday",
+            "jhardy"
+        ]
     },
     {
         "first_name": "Brian",
         "last_name": "Hooper",
-        "username": "BHooper",
-        "password": "password"
+        "username": "bhooper",
+        "password": "password",
+        "street": "6085 Cursus Street",
+        "city": "Saint Andr\u00ef\u00bf\u00bd",
+        "zip": "43795",
+        "friends": [
+            "tingram",
+            "kmcknight",
+            "roliver",
+            "lmarsh"
+        ]
     },
     {
         "first_name": "Kevyn",
         "last_name": "Bates",
-        "username": "KBates",
-        "password": "password"
+        "username": "kbates",
+        "password": "password",
+        "street": "Ap #777-8749 Egestas. Street",
+        "city": "Aiseau-Presles",
+        "zip": "61111",
+        "friends": [
+            "kdonaldson",
+            "jcalhoun",
+            "urichardson",
+            "dramos"
+        ]
     },
     {
         "first_name": "Declan",
         "last_name": "Glenn",
-        "username": "DGlenn",
-        "password": "password"
+        "username": "dglenn",
+        "password": "password",
+        "street": "P.O. Box 850, 7044 Luctus St.",
+        "city": "Austin",
+        "zip": "40504",
+        "friends": [
+            "apreston",
+            "dramsey",
+            "tnelson",
+            "cflynn"
+        ]
     },
     {
         "first_name": "Cherokee",
         "last_name": "Downs",
-        "username": "CDowns",
-        "password": "password"
+        "username": "cdowns",
+        "password": "password",
+        "street": "Ap #904-7931 Et, Road",
+        "city": "Oostakker",
+        "zip": "B2Z 4Z8",
+        "friends": [
+            "wwiley",
+            "bmeadows",
+            "fwilder",
+            "gwarner"
+        ]
     },
     {
         "first_name": "Baxter",
         "last_name": "Meadows",
-        "username": "BMeadows",
-        "password": "password"
+        "username": "bmeadows",
+        "password": "password",
+        "street": "Ap #794-3102 Libero. Rd.",
+        "city": "Lahore",
+        "zip": "87-538",
+        "friends": [
+            "eharrell",
+            "btravis",
+            "mmacdonald",
+            "jwhitfield"
+        ]
     },
     {
         "first_name": "Madison",
         "last_name": "Frye",
-        "username": "MFrye",
-        "password": "password"
+        "username": "mfrye",
+        "password": "password",
+        "street": "7630 Nec Street",
+        "city": "Neelum Valley",
+        "zip": "64-918",
+        "friends": [
+            "kjennings",
+            "cmarshall",
+            "smckee",
+            "akaufman"
+        ]
     },
     {
         "first_name": "Kiayada",
         "last_name": "Villarreal",
-        "username": "KVillarreal",
-        "password": "password"
+        "username": "kvillarreal",
+        "password": "password",
+        "street": "P.O. Box 576, 9436 Tellus St.",
+        "city": "Minto",
+        "zip": "321089",
+        "friends": [
+            "dluna",
+            "afrancis",
+            "gwoods",
+            "cwebster"
+        ]
     },
     {
         "first_name": "Laith",
         "last_name": "Melton",
-        "username": "LMelton",
-        "password": "password"
+        "username": "lmelton",
+        "password": "password",
+        "street": "Ap #960-510 Amet Rd.",
+        "city": "Watson Lake",
+        "zip": "70339-815",
+        "friends": [
+            "hcooper",
+            "mdonaldson",
+            "khammond",
+            "upruitt"
+        ]
     },
     {
         "first_name": "Anne",
         "last_name": "Hubbard",
-        "username": "AHubbard",
-        "password": "password"
+        "username": "ahubbard",
+        "password": "password",
+        "street": "601-6318 Malesuada St.",
+        "city": "Bromyard",
+        "zip": "3525 DT",
+        "friends": [
+            "cdowns",
+            "csantiago",
+            "ophillips",
+            "dglass"
+        ]
     },
     {
         "first_name": "Mari",
         "last_name": "Macdonald",
-        "username": "MMacdonald",
-        "password": "password"
+        "username": "mmacdonald",
+        "password": "password",
+        "street": "1074 Enim St.",
+        "city": "Roksem",
+        "zip": "41218",
+        "friends": [
+            "gnorton",
+            "ahubbard",
+            "mquinn",
+            "lodom"
+        ]
     },
     {
         "first_name": "Jorden",
         "last_name": "Hardy",
-        "username": "JHardy",
-        "password": "password"
+        "username": "jhardy",
+        "password": "password",
+        "street": "Ap #988-7463 Erat. Ave",
+        "city": "St. David's",
+        "zip": "797673",
+        "friends": [
+            "jvillarreal",
+            "ssavage",
+            "mewing",
+            "asweet"
+        ]
     },
     {
         "first_name": "Leandra",
         "last_name": "Lane",
-        "username": "LLane",
-        "password": "password"
+        "username": "llane",
+        "password": "password",
+        "street": "Ap #677-1533 Nunc St.",
+        "city": "Wepion",
+        "zip": "53324",
+        "friends": [
+            "hmosley",
+            "modom",
+            "eashley",
+            "bpollard"
+        ]
     },
     {
         "first_name": "Charde",
         "last_name": "Roy",
-        "username": "CRoy",
-        "password": "password"
+        "username": "croy",
+        "password": "password",
+        "street": "Ap #351-7170 Et Street",
+        "city": "Leipzig",
+        "zip": "51279-22555",
+        "friends": [
+            "sferguson",
+            "mgraves",
+            "tfranco",
+            "dglenn"
+        ]
     },
     {
         "first_name": "Maisie",
         "last_name": "Ewing",
-        "username": "MEwing",
-        "password": "password"
+        "username": "mewing",
+        "password": "password",
+        "street": "259-4787 Nunc Ave",
+        "city": "Outremont",
+        "zip": "75357-47383",
+        "friends": [
+            "gmendoza",
+            "awalsh",
+            "sallen",
+            "fnorris"
+        ]
     },
     {
         "first_name": "Aphrodite",
         "last_name": "Kaufman",
-        "username": "AKaufman",
-        "password": "password"
+        "username": "akaufman",
+        "password": "password",
+        "street": "Ap #920-5477 Metus Ave",
+        "city": "Ife",
+        "zip": "15532-44092",
+        "friends": [
+            "lmelton",
+            "kkeith",
+            "rguzman",
+            "rfarley"
+        ]
     },
     {
         "first_name": "Kimberly",
         "last_name": "Donaldson",
-        "username": "KDonaldson",
-        "password": "password"
+        "username": "kdonaldson",
+        "password": "password",
+        "street": "8208 Odio Ave",
+        "city": "San Carlos",
+        "zip": "35986",
+        "friends": [
+            "kcote",
+            "croy",
+            "hdouglas",
+            "amcclain"
+        ]
     },
     {
         "first_name": "Gannon",
         "last_name": "James",
-        "username": "GJames",
-        "password": "password"
+        "username": "gjames",
+        "password": "password",
+        "street": "P.O. Box 595, 4033 Nonummy St.",
+        "city": "Bajardo",
+        "zip": "5186",
+        "friends": [
+            "kpeters",
+            "bnorton",
+            "proy",
+            "wnewman"
+        ]
     },
     {
         "first_name": "Petra",
         "last_name": "Roy",
-        "username": "PRoy",
-        "password": "password"
+        "username": "proy",
+        "password": "password",
+        "street": "294-5812 Fringilla, Ave",
+        "city": "Piracicaba",
+        "zip": "870896",
+        "friends": [
+            "ahoover",
+            "mlindsey",
+            "kbates",
+            "bpickett"
+        ]
     },
     {
         "first_name": "Brenden",
         "last_name": "Pollard",
-        "username": "BPollard",
-        "password": "password"
+        "username": "bpollard",
+        "password": "password",
+        "street": "5128 Aliquet St.",
+        "city": "North Battleford",
+        "zip": "867697",
+        "friends": [
+            "acortez",
+            "kpatterson",
+            "kvillarreal"
+        ]
     },
     {
         "first_name": "Herrod",
         "last_name": "Cooper",
-        "username": "HCooper",
-        "password": "password"
+        "username": "hcooper",
+        "password": "password",
+        "street": "Ap #228-6654 A, Avenue",
+        "city": "Quilleco",
+        "zip": "962013",
+        "friends": [
+            "scunningham",
+            "roneill",
+            "vmccormick",
+            "qbarton"
+        ]
     },
     {
         "first_name": "Driscoll",
         "last_name": "Ramsey",
-        "username": "DRamsey",
-        "password": "password"
+        "username": "dramsey",
+        "password": "password",
+        "street": "P.O. Box 889, 9900 Risus. Av.",
+        "city": "Suarlee",
+        "zip": "271980",
+        "friends": [
+            "llane",
+            "nochoa",
+            "calford",
+            "afleming"
+        ]
     },
     {
         "first_name": "Kaitlin",
         "last_name": "Nixon",
-        "username": "KNixon",
-        "password": "password"
+        "username": "knixon",
+        "password": "password",
+        "street": "6294 Malesuada Avenue",
+        "city": "Lleida",
+        "zip": "974491",
+        "friends": [
+            "cramirez",
+            "gjames",
+            "cweber",
+            "rpate"
+        ]
     },
     {
         "first_name": "Brendan",
         "last_name": "Pickett",
-        "username": "BPickett",
-        "password": "password"
+        "username": "bpickett",
+        "password": "password",
+        "street": "Ap #432-6650 Mollis. Road",
+        "city": "Bellevue",
+        "zip": "64-763",
+        "friends": [
+            "jdavid",
+            "bhooper",
+            "knixon",
+            "tmckenzie"
+        ]
     },
     {
         "first_name": "Gage",
         "last_name": "Mendoza",
-        "username": "GMendoza",
-        "password": "password"
+        "username": "gmendoza",
+        "password": "password",
+        "street": "P.O. Box 455, 4692 Dictum Ave",
+        "city": "Glenrothes",
+        "zip": "17241",
+        "friends": [
+            "cgould",
+            "gallison",
+            "mfrye",
+            "hstout"
+        ]
     },
     {
         "first_name": "Cole",
         "last_name": "Santiago",
-        "username": "CSantiago",
-        "password": "password"
+        "username": "csantiago",
+        "password": "password",
+        "street": "7616 Vestibulum Street",
+        "city": "Owen Sound",
+        "zip": "82534",
+        "friends": [
+            "ghiggins",
+            "aknowles",
+            "zday",
+            "jhardy"
+        ]
     },
     {
         "first_name": "Fallon",
         "last_name": "Wilder",
-        "username": "FWilder",
-        "password": "password"
+        "username": "fwilder",
+        "password": "password",
+        "street": "9818 Nunc. St.",
+        "city": "Pukekohe",
+        "zip": "63174",
+        "friends": [
+            "tingram",
+            "kmcknight",
+            "roliver",
+            "lmarsh"
+        ]
     },
     {
         "first_name": "Hilary",
         "last_name": "Stout",
-        "username": "HStout",
-        "password": "password"
+        "username": "hstout",
+        "password": "password",
+        "street": "309-390 Etiam Av.",
+        "city": "New Galloway",
+        "zip": "9655",
+        "friends": [
+            "kdonaldson",
+            "jcalhoun",
+            "urichardson",
+            "dramos"
+        ]
     },
     {
         "first_name": "Shelby",
         "last_name": "Cunningham",
-        "username": "SCunningham",
-        "password": "password"
+        "username": "scunningham",
+        "password": "password",
+        "street": "832-5100 Commodo Road",
+        "city": "Crecchio",
+        "zip": "83114",
+        "friends": [
+            "apreston",
+            "dramsey",
+            "tnelson",
+            "cflynn"
+        ]
     },
     {
         "first_name": "Kenneth",
         "last_name": "Keith",
-        "username": "KKeith",
-        "password": "password"
+        "username": "kkeith",
+        "password": "password",
+        "street": "2215 Nulla Rd.",
+        "city": "Biggleswade",
+        "zip": "68959",
+        "friends": [
+            "wwiley",
+            "bmeadows",
+            "fwilder",
+            "gwarner"
+        ]
     },
     {
         "first_name": "Marvin",
         "last_name": "Quinn",
-        "username": "MQuinn",
-        "password": "password"
+        "username": "mquinn",
+        "password": "password",
+        "street": "Ap #644-7587 Dictum Av.",
+        "city": "Castelbaldo",
+        "zip": "54935",
+        "friends": [
+            "eharrell",
+            "btravis",
+            "mmacdonald",
+            "jwhitfield"
+        ]
     },
     {
         "first_name": "Jamal",
         "last_name": "Whitfield",
-        "username": "JWhitfield",
-        "password": "password"
+        "username": "jwhitfield",
+        "password": "password",
+        "street": "P.O. Box 549, 7687 Hendrerit Road",
+        "city": "Kolomna",
+        "zip": "268849",
+        "friends": [
+            "kjennings",
+            "cmarshall",
+            "smckee",
+            "akaufman"
+        ]
     },
     {
         "first_name": "Tanek",
         "last_name": "Ingram",
-        "username": "TIngram",
-        "password": "password"
+        "username": "tingram",
+        "password": "password",
+        "street": "2001 Orci Ave",
+        "city": "Burns Lake",
+        "zip": "42630-18868",
+        "friends": [
+            "dluna",
+            "afrancis",
+            "gwoods",
+            "cwebster"
+        ]
     },
     {
         "first_name": "Nash",
         "last_name": "Ochoa",
-        "username": "NOchoa",
-        "password": "password"
+        "username": "nochoa",
+        "password": "password",
+        "street": "597-469 Egestas. Rd.",
+        "city": "Vance",
+        "zip": "38806-370",
+        "friends": [
+            "hcooper",
+            "mdonaldson",
+            "khammond",
+            "upruitt"
+        ]
     },
     {
         "first_name": "Hilary",
         "last_name": "Douglas",
-        "username": "HDouglas",
-        "password": "password"
+        "username": "hdouglas",
+        "password": "password",
+        "street": "P.O. Box 139, 406 Aenean Road",
+        "city": "Noida",
+        "zip": "9659",
+        "friends": [
+            "cdowns",
+            "csantiago",
+            "ophillips",
+            "dglass"
+        ]
     },
     {
         "first_name": "Amethyst",
         "last_name": "Sweet",
-        "username": "ASweet",
-        "password": "password"
+        "username": "asweet",
+        "password": "password",
+        "street": "957-9066 Sed St.",
+        "city": "Las Condes",
+        "zip": "J8A 5G4",
+        "friends": [
+            "gnorton",
+            "ahubbard",
+            "mquinn",
+            "lodom"
+        ]
     },
     {
         "first_name": "Deborah",
         "last_name": "Luna",
-        "username": "DLuna",
-        "password": "password"
+        "username": "dluna",
+        "password": "password",
+        "street": "Ap #276-704 Magna. Avenue",
+        "city": "Kohlu",
+        "zip": "20109",
+        "friends": [
+            "jvillarreal",
+            "ssavage",
+            "mewing",
+            "asweet"
+        ]
     },
     {
         "first_name": "Jermaine",
         "last_name": "Calhoun",
-        "username": "JCalhoun",
-        "password": "password"
+        "username": "jcalhoun",
+        "password": "password",
+        "street": "Ap #908-2325 At St.",
+        "city": "Monteu Roero",
+        "zip": "50-749",
+        "friends": [
+            "hmosley",
+            "modom",
+            "eashley",
+            "bpollard"
+        ]
     },
     {
         "first_name": "Carter",
         "last_name": "Weber",
-        "username": "CWeber",
-        "password": "password"
+        "username": "cweber",
+        "password": "password",
+        "street": "Ap #135-8084 Quam, St.",
+        "city": "Zhukovsky",
+        "zip": "26530",
+        "friends": [
+            "sferguson",
+            "mgraves",
+            "tfranco",
+            "dglenn"
+        ]
     },
     {
         "first_name": "Wang",
         "last_name": "Newman",
-        "username": "WNewman",
-        "password": "password"
+        "username": "wnewman",
+        "password": "password",
+        "street": "6680 Et Ave",
+        "city": "Sigillo",
+        "zip": "5953",
+        "friends": [
+            "gmendoza",
+            "awalsh",
+            "sallen",
+            "fnorris"
+        ]
     },
     {
         "first_name": "Serena",
         "last_name": "Ferguson",
-        "username": "SFerguson",
-        "password": "password"
+        "username": "sferguson",
+        "password": "password",
+        "street": "P.O. Box 196, 9798 In Street",
+        "city": "Ried im Innkreis",
+        "zip": "Z7282",
+        "friends": [
+            "lmelton",
+            "kkeith",
+            "rguzman",
+            "rfarley"
+        ]
     },
     {
         "first_name": "Murphy",
         "last_name": "Donaldson",
-        "username": "MDonaldson",
-        "password": "password"
+        "username": "mdonaldson",
+        "password": "password",
+        "street": "6085 Cursus Street",
+        "city": "Saint Andr\u00ef\u00bf\u00bd",
+        "zip": "43795",
+        "friends": [
+            "kcote",
+            "croy",
+            "hdouglas",
+            "amcclain"
+        ]
     },
     {
         "first_name": "Todd",
         "last_name": "Nelson",
-        "username": "TNelson",
-        "password": "password"
+        "username": "tnelson",
+        "password": "password",
+        "street": "Ap #777-8749 Egestas. Street",
+        "city": "Aiseau-Presles",
+        "zip": "61111",
+        "friends": [
+            "kpeters",
+            "bnorton",
+            "proy",
+            "wnewman"
+        ]
     },
     {
         "first_name": "Thor",
         "last_name": "Mckenzie",
-        "username": "TMckenzie",
-        "password": "password"
+        "username": "tmckenzie",
+        "password": "password",
+        "street": "P.O. Box 850, 7044 Luctus St.",
+        "city": "Austin",
+        "zip": "40504",
+        "friends": [
+            "ahoover",
+            "mlindsey",
+            "kbates",
+            "bpickett"
+        ]
     }
 ]

@@ -9,7 +9,6 @@ parser.add_argument('--housefile', metavar='H', type=str, default="addresses.jso
 args = parser.parse_args()
 
 num_friends = 4
-
 # coprime_step = t : gcd(len(users)+1, t) = 1 AND gcd(1 + num_friends*len(users), t) = 1
 # hard to explain why i wanted a coprime other than in plain english...
 # when we step modulu by a number:n that is a coprime to the step value then
@@ -33,35 +32,47 @@ for p in names:
     first = p['first_name']
     last = p['last_name']
     username = first[0] + last
-    if first == users.get(username):
-        print(f"Found a duplicate username: {username} {first} {second}")
+    if users.get(username):
+        print(f"Found a duplicate username: {username} {first} {last}")
         sys.exit()
     users[username] = first
     person = {
         'first_name': p['first_name'],
         'last_name': p['last_name'],
-        'username': username,
+        'username': username.lower(),
         'password': 'password',
     }
-    #person.update(houses[house_index])
+    person.update(houses[house_index])
     dataset.append(person)
     house_index = (house_index + 1) % len(houses)
 
-# for person in dataset:
-#     friends = []
-#
-#     person.update(friends)
+person_idx = 0
+for person in dataset:
+     friends = {"friends": []}
+     for i in range(0, num_friends):
+         if person_idx != 0:
+             friends["friends"].append(dataset[person_idx]['username'])
+         person_idx = (person_idx + coprime_step) % len(dataset)
+     person.update(friends)
 
 print("Success")
 
 with open('dataset.json', 'w') as outfile:
     json.dump(dataset, outfile, indent=4)
 
-with open('input.txt', 'w') as out:
+with open('create_people.txt', 'w') as out:
     for u in dataset:
         out.write(str(1) + "\n")
         out.write(u['first_name'] + "\n")
         out.write(u['last_name'] + "\n")
         out.write(u['username'] + "\n")
         out.write(u['password'] + "\n")
+    out.write(str(8) + "\n")
+
+with open('create_friends.txt', 'w') as out:
+    for u in dataset:
+        for f in u["friends"]:
+            out.write(str(4) + "\n")
+            out.write(u['username'] + "\n")
+            out.write(f + "\n")
     out.write(str(8) + "\n")
