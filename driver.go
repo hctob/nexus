@@ -8,7 +8,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"time"
 )
 
 var (
