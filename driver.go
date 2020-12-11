@@ -7,8 +7,8 @@ import (
     "runtime"
     "github.com/neo4j/neo4j-go-driver/neo4j"
     "net/http"
-    //"encoding/json"
-    //"io/ioutil"
+    "encoding/json"
+    "io/ioutil"
     //"log"
 )
 
@@ -18,6 +18,7 @@ var (
     arg_username_raw     = flag.String("u", "neo4j", "Usernames are unique identifiers for database users.")
     arg_password_raw     = flag.String("p", "cs476", "Unencrypted password for selected username.")
     cm_global * ChannelPool
+
     logged_in = false
     totalQueries int64
 )
@@ -131,53 +132,49 @@ func drive(uri, username, password string, cm ChannelPool) {
             fmt.Println("Error:\n", err)
             return
         }
+
         //res := false
         for result.Next() {
             fmt.Println(login.password, result.Record().GetByIndex(0).(string))
             if login.password == result.Record().GetByIndex(0).(string) {
                 cm.loginGood <- true
+                fmt.Println("successful login\n")
             } else {
                 cm.loginGood <- false
             }
         }
+        //fmt.Println("successful login\n")
         //cm.loginGood <- false
         }
     }
 }
 
 type Login_Frontend struct {
-    username string `json: username`
-    password string `json: password`
+    Username string
 }
 
 func get_login(w http.ResponseWriter, req *http.Request){
   if req.Method == http.MethodPost{
-    /*w.Header().Set("Content-Type", "application/json")
-    body, _ := ioutil.ReadAll(req.Body)
-    //decoder := json.NewDecoder(req.Body)
-
-    fmt.Println(body)
-    var user Login_Frontend
-    user.username = r.FormValue("username")
-    user.password = r.FormValue("password")
-    //err := decoder.Decode(&user)
-    /*if err != nil {
-		    panic(err)
-	  }*/
-    /*err := json.Unmarshal(body, &user)
-    if err != nil{
-      log.Fatal(err)
-    }*/
-    fmt.Println("working ", req.Body, "\n")
-    login := (*cm_global).login(string(req.FormValue("username")), string(req.FormValue("password")))
-    logged_in = login
-    if login == false {
-        fmt.Println("ERROR: incorrect login information")
+    //var user Login_Frontend
+    var obj map[string]string
+    body, readErr := ioutil.ReadAll(req.Body)
+    if readErr != nil{
+      panic(readErr)
     }
-    fmt.Println("Login worked\n")
-  /*} else if(req.Method == http.MethodGet){
-    http.ServeFile(w, req, "nexus-frontend/login-temp.html")
-  */}
+    err := json.Unmarshal(body, &obj)
+    if err != nil{
+      panic(err)
+      http.Error(w, err.Error(), http.StatusBadRequest)
+    }
+    fmt.Println("username: ", obj["Username"], "\n")
+    fmt.Println("password: ", obj["Password"], "\n")
+    (*cm_global).login(obj["Username"], obj["Password"])
+    fmt.Println("working")
+    cookie := http.Cookie{Name: string(obj["Username"])}
+    http.SetCookie(w, &cookie)
+    http.Redirect(w, req, "http://localhost:8090/nexus-frontend/main-page.html", http.StatusSeeOther)
+    fmt.Println("working 2")
+  }
 }
 
 /*

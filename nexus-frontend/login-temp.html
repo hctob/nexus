@@ -14,10 +14,32 @@
         <label for="password"><b>Password</b></label>
         <input type="password" placeholder="Enter Password" name="password" id="password" required>
 
-        <button type="submit">Login</button>
+        <button type="submit" id="sub">Login</button>
       </div>
 
     </form>
+    <script>
+    document.getElementById("sub").addEventListener("click", ()=>{
+      //alert("Hello World!");
+      console.log("working1");
+      let result = document.querySelector('.result');
+      let xhr = new XMLHttpRequest();
+      let url = "/login";
+      console.log("working 2");
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4 && xhr.status == 200){
+          result.innerHTML = this.responseText;
+        }
+      }
+      console.log("working 3");
+      var data = JSON.stringify({"Username": document.querySelector('#username').value,
+                                  "Password": document.querySelector('#password').value});
+      console.log(data);
+      xhr.send(data);
+    });
+    </script>
   </body>
 
 
