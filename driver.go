@@ -9,6 +9,8 @@ import (
     "net/http"
     "encoding/json"
     "io/ioutil"
+    "strconv"
+    //"html/template"
     //"log"
 )
 
@@ -119,6 +121,7 @@ func drive(uri, username, password string, cm ChannelPool) {
               fmt.Printf("\n%s\ncreated between %s and %s\n", result.Record().GetByIndex(0), result.Record().GetByIndex(1), result.Record().GetByIndex(2))
           }
       case login := <-cm.loginChannel:
+          //time.Sleep(20 * time.Second)
           un := login.username
           //fmt.Println("Received username =", un)
           pw := login.password
@@ -151,6 +154,11 @@ func drive(uri, username, password string, cm ChannelPool) {
 
 type Login_Frontend struct {
     Username string
+    Login_status bool
+}
+type Login_Response struct {
+  Username string `json: Username`
+  Status bool `json: Status`
 }
 
 func get_login(w http.ResponseWriter, req *http.Request){
@@ -168,12 +176,51 @@ func get_login(w http.ResponseWriter, req *http.Request){
     }
     fmt.Println("username: ", obj["Username"], "\n")
     fmt.Println("password: ", obj["Password"], "\n")
-    (*cm_global).login(obj["Username"], obj["Password"])
+    t := (*cm_global).login(obj["Username"], obj["Password"])
     fmt.Println("working")
-    cookie := http.Cookie{Name: string(obj["Username"])}
+
+    /*var t bool
+    for{
+      fmt.Println("loggin in\n")
+      temp, ok := <-(*cm_global).loginGood
+
+      if(ok){
+        fmt.Println("login successful\n")
+        t = temp
+        break
+      }
+    }*/
+    cookie := http.Cookie{Name: "Username", Value: string(obj["Username"])}
     http.SetCookie(w, &cookie)
-    http.Redirect(w, req, "http://localhost:8090/main-page.html", 301)
-    //http.ServeFile(w, req, "/nexus-frontend/main-page.html")
+    cookie_status := http.Cookie{Name: "Status", Value: strconv.FormatBool(t)}
+    http.SetCookie(w, &cookie_status)
+    info := Login_Response{
+      Username: obj["Username"],
+      Status: t,
+    }
+    /*w.Header().Set("Content-Type", "text/html; charset=utf-8")
+    templ, err := template.ParseFiles("login-temp.html")
+    if err != nil {
+             fmt.Fprintf(w, "Unable to load template")
+        }
+    templ.Execute(w, info)*/
+
+    //fmt.Println("Login successful: ", t, "\n")
+    /*if(t){
+      info.Status = true
+    }*/
+    //res, e := json.Marshal(info)
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(info)
+
+    //if(e != nil){
+    //  panic("json encoding failed\n")
+    //}
+    //fmt.Println("Object ", res)
+
+    //w.Write(res)
+
     fmt.Println("working 2")
   }
 }
