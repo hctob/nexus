@@ -49,20 +49,22 @@ if login.password == pw {
 ### User Portal:
 Coming soon...
 
-Backend Queries:
-* Getting user information:
+#### Backend Queries:
+* **Getting user information:**
 If we wanted to get all the information for say, user **dbottch1**, the following query is run with the target username:
 ```
 match (n:Person {username: $u_name}) return n.first_name, n.last_name, n.username, n.password
 ```
-* Update property
+
+* **Update property**
 If a user were to update their password, the following query would reflect that change in the database:
 ```
 MATCH (n:Person {username: $u_name}) SET $property = $value RETURN $property
 ```
 **Result:**
 ![Updating a user's password](https://github.com/hctob/nexus/blob/main/nexus-frontend/img/neo4j_update.PNG)
-* Add friend (ex: **Let me add you as a friend**):
+
+* **Add friend** (ex: **Let me add you as a friend**):
 Let's say that we have two users, Dan and Joe, who wish to be friends:
 ![Two distinct users](https://github.com/hctob/nexus/blob/main/nexus-frontend/img/neo4j_two.PNG)
 ```
@@ -70,7 +72,8 @@ MATCH (a:Person{username: $u_name1}) , (b:Person{username: $u_name2}) CREATE (a)
 ```
 **Result:**
 ![Two distinct users becoming friends](https://github.com/hctob/nexus/blob/main/nexus-frontend/img/neo4j_friends.PNG)
-* View friends list (ex: **Who are my friends?**):
+
+* **View friends list** (ex: **Who are my friends?**):
 Imagine more of Dan's friends sign up for Nexus and some of them happen to live in their own house:
 ![Two distinct users becoming friends](https://github.com/hctob/nexus/blob/main/nexus-frontend/img/many_friends.PNG)
 
@@ -80,7 +83,8 @@ match (n:Person{username: $username})-[r:FRIEND]->(f) return f.first_name, f.las
 ```
 **Result:**
 ![Two distinct users becoming friends](https://github.com/hctob/nexus/blob/main/nexus-frontend/img/friends_list.PNG)
-* Create House (ex: **Let me add my home address**):
+
+* **Create House** (ex: **Let me add my home address**):
 Say Dan (**dbottch1**) wanted to add their home address. A new House node with the unique address is created, and a relationship
 between the Person node and the House node is created (**(user:Person)-[:HOUSE]->(h:House)**).
 ```
@@ -88,21 +92,24 @@ match (n:Person{username: $un}) create (h:House{address: $addr}) create (n)-[r:H
 ```
 **Result:**
 ![User creating and joining their house](https://github.com/hctob/nexus/blob/main/nexus-frontend/img/create_house.PNG)
-* Join House by username (ex: **Let me join my home address**):
+
+* **Join House by username** (ex: **Let me join my home address**):
 Now, say Joe (**jsanch49**) wanted to join dbottch1's house, as they live together:
 ```
 match (n:Person{username: $target_user})-[r:HOUSE]->(h), (c:Person{username: $current_user}) create (c)-[:HOUSE]->(h) return h.address
 ```
 **Result**:
 ![User creating and joining their house](https://github.com/hctob/nexus/blob/main/nexus-frontend/img/join_house.PNG)
-* View household members:
-By address (ex: **Who lives at 15 Crandall?**):
+
+* **View household members**:
+**By address** (ex: **Who lives at 15 Crandall?**):
 ```
 match (h:House{address: $input})<--(n) return n.username, n.first_name, n.last_name
 ```
 **Result**:
 ![User creating and joining their house](https://github.com/hctob/nexus/blob/main/nexus-frontend/img/housemates_addr.PNG)
-By username (ex: **Who lives with 'mperaza'?**):
+
+**By username** (ex: **Who lives with 'mperaza'?**):
 ```
 match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p) return p.username, p.first_name, p.last_name
 ```
