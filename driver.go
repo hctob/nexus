@@ -313,7 +313,7 @@ func main() {
 				fmt.Scanln(&pass)
 
 				cm.create_person(first, last, user, pass)
-				time.Sleep(time.Millisecond * 250)
+				//time.Sleep(time.Millisecond * 250)
 
 			} else if strings.ToLower(option) == "update" || option == "2" {
 				var user string
@@ -332,7 +332,7 @@ func main() {
 				fmt.Scanln(&value)
 				//var update = &Update {user, property, value}
 				cm.update_by_username(user, property, value)
-				time.Sleep(time.Millisecond * 250)
+				//time.Sleep(time.Millisecond * 250)
 
 			} else if strings.ToLower(option) == "get" || option == "3" {
 				var user string
@@ -340,7 +340,7 @@ func main() {
 				fmt.Printf("nexus> ")
 				fmt.Scanln(&user)
 				cm.get_person(user)
-				time.Sleep(time.Millisecond * 250)
+				//time.Sleep(time.Millisecond * 250)
 			} else if strings.ToLower(option) == "friend" || strings.ToLower(option) == "friends" || option == "4" {
 				var user1 string
 				fmt.Println("Username 1: ")
@@ -351,14 +351,14 @@ func main() {
 				fmt.Printf("nexus> ")
 				fmt.Scanln(&user2)
 				cm.make_friends(user1, user2)
-				time.Sleep(time.Millisecond * 250)
+				//time.Sleep(time.Millisecond * 250)
 			} else if strings.ToLower(option) == "list" || strings.ToLower(option) == "friends_list" || option == "5" {
 				var username string
 				fmt.Println("Username: ")
 				fmt.Printf("nexus> ")
 				fmt.Scanln(&username)
 				cm.get_friends(username)
-				time.Sleep(time.Millisecond * 250)
+				//time.Sleep(time.Millisecond * 250)
 
 			} else if strings.ToLower(option) == "house" || option == "6" {
 				var option2 string
@@ -381,14 +381,14 @@ func main() {
 					address = scanner.Text()
 					//fmt.Scanln(&address)
 					cm.create_house(username, address)
-					time.Sleep(time.Millisecond * 250)
+					//time.Sleep(time.Millisecond * 250)
 				} else if strings.ToLower(option2) == "join" || option2 == "2" {
 					var username string
 					fmt.Println("Target Username: ")
 					fmt.Printf("nexus> ")
 					fmt.Scanln(&username)
 					cm.join_house(username, current_user.username)
-					time.Sleep(time.Millisecond * 250)
+					//time.Sleep(time.Millisecond * 250)
 				}
 
 			} else if strings.ToLower(option) == "household" || strings.ToLower(option) == "get_house" || option == "7" {
@@ -406,14 +406,14 @@ func main() {
 					address = scanner.Text()
 					//fmt.Scanln(&address)
 					cm.get_household(address, false)
-					time.Sleep(time.Millisecond * 250)
+					//time.Sleep(time.Millisecond * 250)
 				} else if strings.ToLower(option2) == "username" || option2 == "2" {
 					var username string
 					fmt.Println("Username: ")
 					fmt.Printf("nexus> ")
 					fmt.Scanln(&username)
 					cm.get_household(username, true)
-					time.Sleep(time.Millisecond * 250)
+					//time.Sleep(time.Millisecond * 250)
 				}
 
 			} else if strings.ToLower(option) == "e" || strings.ToLower(option) == "exit" || option == "8" {
