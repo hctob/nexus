@@ -64,18 +64,18 @@ type ChannelPool struct {
 
 func pool_init() ChannelPool {
 	var cm ChannelPool
-	cm.createChannel = make(chan User, 128)
+	cm.createChannel = make(chan User, 1024)
 	cm.loginGood = make(chan bool)
-	cm.updateChannel = make(chan Update, 128)
-	cm.getNodeChannel = make(chan string, 128)
-	cm.friendChannel = make(chan Friends, 128)
-	cm.loginChannel = make(chan Login, 128)
+	cm.updateChannel = make(chan Update, 1024)
+	cm.getNodeChannel = make(chan string, 1024)
+	cm.friendChannel = make(chan Friends, 1024)
+	cm.loginChannel = make(chan Login, 1024)
 	cm.loggedIn = make(chan User)
-	cm.get_friends_list = make(chan string, 128)
-	cm.send_friends_list = make(chan map[string]User, 128)
-	cm.createHouse = make(chan House, 128)
-	cm.joinHouse = make(chan Join, 128)
-	cm.get_house = make(chan HouseQuery, 128)
+	cm.get_friends_list = make(chan string, 1024)
+	cm.send_friends_list = make(chan map[string]User, 1024)
+	cm.createHouse = make(chan House, 1024)
+	cm.joinHouse = make(chan Join, 1024)
+	cm.get_house = make(chan HouseQuery, 1024)
 	return cm //return pointer to newly initialized ChannelPool struct
 }
 
