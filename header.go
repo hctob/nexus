@@ -1,152 +1,165 @@
 package main
 
 import (
-    "fmt"
-    "github.com/neo4j/neo4j-go-driver/neo4j"
+	"fmt"
+	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
+
 /*
 * Any structs/helper functions
-*/
+ */
 
 type User struct {
-    first_name string
-    last_name string
-    username string
-    password string
+	first_name string
+	last_name  string
+	username   string
+	password   string
 }
 
 type Update struct {
-    username string
-    property string
-    value string
+	username string
+	property string
+	value    string
 }
 
 type Friends struct {
-    u_name1 string
-    u_name2 string
+	u_name1 string
+	u_name2 string
 }
 
 type Login struct {
-    username string
-    password string
+	username string
+	password string
 }
 
 type House struct {
-    username string
-    address string
+	username string
+	address  string
 }
 
 type Join struct {
-    target_user    string      //username of Person to join the House of
-    current_user string     //username of Person currently logged in; used to create relationship for current_user->House
+	target_user  string //username of Person to join the House of
+	current_user string //username of Person currently logged in; used to create relationship for current_user->House
 }
 
+type HouseQuery struct {
+	input      string
+	isUsername bool //determines whether we are using a username or address as input
+}
 
 type ChannelPool struct {
-    createChannel  chan User     //channel for creating a new user
-    updateChannel chan Update
-    getNodeChannel   chan string
-    friendChannel   chan Friends
-    loginChannel    chan Login
-    loginGood     chan bool
-    loggedIn  chan User
-    createHouse   chan House
-    joinHouse   chan Join
-    get_friends_list chan string
-    send_friends_list   chan map[string]User
+	createChannel     chan User //channel for creating a new user
+	updateChannel     chan Update
+	getNodeChannel    chan string
+	friendChannel     chan Friends
+	loginChannel      chan Login
+	loginGood         chan bool
+	loggedIn          chan User
+	createHouse       chan House
+	joinHouse         chan Join
+	get_friends_list  chan string
+	get_house         chan HouseQuery
+	send_friends_list chan map[string]User
 }
 
 func pool_init() ChannelPool {
-    var cm ChannelPool
-    cm.createChannel = make(chan User, 128)
-    cm.loginGood = make(chan bool)
-    cm.updateChannel = make(chan Update, 128)
-    cm.getNodeChannel = make(chan string, 128)
-    cm.friendChannel = make(chan Friends, 128)
-    cm.loginChannel = make(chan Login, 128)
-    cm.loggedIn = make(chan User)
-    cm.get_friends_list = make(chan string, 128)
-    cm.send_friends_list = make(chan map[string]User, 128)
-    cm.createHouse = make(chan House, 128)
-    cm.joinHouse = make(chan Join, 128)
-    return cm  //return pointer to newly initialized ChannelPool struct
+	var cm ChannelPool
+	cm.createChannel = make(chan User, 128)
+	cm.loginGood = make(chan bool)
+	cm.updateChannel = make(chan Update, 128)
+	cm.getNodeChannel = make(chan string, 128)
+	cm.friendChannel = make(chan Friends, 128)
+	cm.loginChannel = make(chan Login, 128)
+	cm.loggedIn = make(chan User)
+	cm.get_friends_list = make(chan string, 128)
+	cm.send_friends_list = make(chan map[string]User, 128)
+	cm.createHouse = make(chan House, 128)
+	cm.joinHouse = make(chan Join, 128)
+	cm.get_house = make(chan HouseQuery, 128)
+	return cm //return pointer to newly initialized ChannelPool struct
 }
+
 /*
 *
 * Creates a Person node with the specified properties
-*/
+ */
 func (cm ChannelPool) create_person(first_name, last_name, username, password string) {
-    var user = &User {first_name, last_name, username, password}
-    cm.createChannel <- *user
+	var user = &User{first_name, last_name, username, password}
+	cm.createChannel <- *user
 }
 
 func (cm ChannelPool) get_person(username string) {
-    cm.getNodeChannel <- username
+	cm.getNodeChannel <- username
 }
 
 func (cm ChannelPool) make_friends(u_name1, u_name2 string) {
-    var friend = &Friends { u_name1, u_name2 }
-    cm.friendChannel <- *friend
+	var friend = &Friends{u_name1, u_name2}
+	cm.friendChannel <- *friend
 }
 
-func create_contact_person(u_name1 string, u_name2 string, s *neo4j.Session){
-  _, err := (*s).Run("MATCH (a:Person),(b:Person) WHERE a.username = $u_name1 AND b.username = $u_name2 CREATE (a)-[r:Friend]->(b) RETURN r", map[string]interface{}{
-      "u_name1" : u_name1,
-       "u_name2" : u_name2,
-  })
+func create_contact_person(u_name1 string, u_name2 string, s *neo4j.Session) {
+	_, err := (*s).Run("MATCH (a:Person),(b:Person) WHERE a.username = $u_name1 AND b.username = $u_name2 CREATE (a)-[r:Friend]->(b) RETURN r", map[string]interface{}{
+		"u_name1": u_name1,
+		"u_name2": u_name2,
+	})
 
-if err != nil {
-    fmt.Println("Error:\n", err)
-    return
-}
-fmt.Println("friend relationship created\n")
+	if err != nil {
+		fmt.Println("Error:\n", err)
+		return
+	}
+	fmt.Println("friend relationship created\n")
 
 }
 
 func (cm ChannelPool) update_by_username(u_name, property, value string) {
-    var up = &Update {u_name, property, value}
-    cm.updateChannel <- *up
+	var up = &Update{u_name, property, value}
+	cm.updateChannel <- *up
 }
 
 //update a user's property
 func update_user(u_name string, property string, value string, s *neo4j.Session) {
-  result, err := (*s).Run("MATCH (a:Person{username: $u_name}) SET a.$property = $value RETURN a", map[string]interface{}{
-    "u_name": u_name,
-    "property":   property,
-    "value": value, })
+	result, err := (*s).Run("MATCH (a:Person{username: $u_name}) SET a.$property = $value RETURN a", map[string]interface{}{
+		"u_name":   u_name,
+		"property": property,
+		"value":    value})
 
-if err != nil {
-    fmt.Println("Error:\n", err)
-    return
-}
-//fmt.Println("query fine\n")
-fmt.Printf("Updated %s %s to %s\n\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+	if err != nil {
+		fmt.Println("Error:\n", err)
+		return
+	}
+	//fmt.Println("query fine\n")
+	fmt.Printf("Updated %s %s to %s\n\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
 }
 
 func (cm ChannelPool) login(username, password string) bool {
-    logInfo := &Login{username, password}
-    cm.loginChannel <- *logInfo
-    good := <-cm.loginGood
-    return good
+	logInfo := &Login{username, password}
+	cm.loginChannel <- *logInfo
+	good := <-cm.loginGood
+	return good
 }
 
-func (cm ChannelPool) create_house(username, address string){
-    house := &House{username, address}
-    cm.createHouse <- *house
+func (cm ChannelPool) create_house(username, address string) {
+	house := &House{username, address}
+	cm.createHouse <- *house
 }
 
-func (cm ChannelPool) join_house(username, current_user string){
-    join := &Join{username, current_user}
-    cm.joinHouse <- *join
+func (cm ChannelPool) join_house(username, current_user string) {
+	join := &Join{username, current_user}
+	cm.joinHouse <- *join
 }
 
 func (cm ChannelPool) get_friends(username string) {
-    cm.get_friends_list <- username
-    //usermap := make(map[string]User)
+	cm.get_friends_list <- username
+	//usermap := make(map[string]User)
+}
+
+func (cm ChannelPool) get_household(input string, isUsername bool) {
+	houseQuery := &HouseQuery{input, isUsername}
+	cm.get_house <- *houseQuery
 }
 
 func print_user_info(user User) {
-    fmt.Printf("\nUser: \"%s\"\nfirst_name: %s\nlast_name: %s\n", user.username, user.first_name, user.last_name)
+	fmt.Printf("\nUser: \"%s\"\nfirst_name: %s\nlast_name: %s\n", user.username, user.first_name, user.last_name)
 }
 
 //connects a person to a house
