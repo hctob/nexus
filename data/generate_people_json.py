@@ -50,7 +50,7 @@ person_idx = 0
 for person in dataset:
      friends = {"friends": []}
      for i in range(0, num_friends):
-         if person_idx != 0:
+         if person_idx != i:
              friends["friends"].append(dataset[person_idx]['username'])
          person_idx = (person_idx + coprime_step) % len(dataset)
      person.update(friends)
