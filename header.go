@@ -36,6 +36,11 @@ type House struct {
     address string
 }
 
+type Join struct {
+    target_user    string      //username of Person to join the House of
+    current_user string     //username of Person currently logged in; used to create relationship for current_user->House
+}
+
 
 type ChannelPool struct {
     createChannel  chan User     //channel for creating a new user
@@ -44,7 +49,9 @@ type ChannelPool struct {
     friendChannel   chan Friends
     loginChannel    chan Login
     loginGood     chan bool
+    loggedIn  chan User
     createHouse   chan House
+    joinHouse   chan Join
     get_friends_list chan string
     send_friends_list   chan map[string]User
 }
@@ -57,9 +64,11 @@ func pool_init() ChannelPool {
     cm.getNodeChannel = make(chan string, 128)
     cm.friendChannel = make(chan Friends, 128)
     cm.loginChannel = make(chan Login, 128)
+    cm.loggedIn = make(chan User)
     cm.get_friends_list = make(chan string, 128)
     cm.send_friends_list = make(chan map[string]User, 128)
     cm.createHouse = make(chan House, 128)
+    cm.joinHouse = make(chan Join, 128)
     return cm  //return pointer to newly initialized ChannelPool struct
 }
 /*
@@ -126,9 +135,18 @@ func (cm ChannelPool) create_house(username, address string){
     cm.createHouse <- *house
 }
 
+func (cm ChannelPool) join_house(username, current_user string){
+    join := &Join{username, current_user}
+    cm.joinHouse <- *join
+}
+
 func (cm ChannelPool) get_friends(username string) {
     cm.get_friends_list <- username
     //usermap := make(map[string]User)
+}
+
+func print_user_info(user User) {
+    fmt.Printf("\nUser: \"%s\"\nfirst_name: %s\nlast_name: %s\n", user.username, user.first_name, user.last_name)
 }
 
 //connects a person to a house

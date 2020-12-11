@@ -6,6 +6,8 @@ import (
     "time"
     "runtime"
     "strings"
+    "os"
+    "bufio"
     "github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
@@ -77,6 +79,19 @@ func drive(uri, username, password string, cm ChannelPool) {
             for result.Next() {
             	fmt.Printf("\nCreated House with address %s\n", result.Record().GetByIndex(0).(string))
             }
+        case join := <-cm.joinHouse:
+            result, err := session.Run("match (n:Person{username: $target_user})-[r:HOUSE]->(h), (c:Person{username: $current_user}) create (c)-[:HOUSE]->(h) return h.address", map[string]interface{}{
+                "target_user": join.target_user,
+                "current_user": join.current_user,
+            })
+            if err != nil {
+                fmt.Println("Error:\n", err)
+                return
+            }
+            //fmt.Println("query fine\n")
+            for result.Next() {
+            	fmt.Printf("\n%s joined House with address %s\n", join.current_user, result.Record().GetByIndex(0).(string))
+            }
         case username := <-cm.get_friends_list:
             result, err := session.Run("match (n:Person{username: $username})-[r:FRIEND]->(f) return f.first_name, f.last_name, f.username", map[string]interface{}{
             "username": username,
@@ -146,7 +161,7 @@ func drive(uri, username, password string, cm ChannelPool) {
           //fmt.Println("Received username =", un)
           pw := login.password
           //fmt.Println("Received password =", pw)
-          result, err := session.Run("MATCH (a:Person{username: $username}) return a.password", map[string]interface{}{
+          result, err := session.Run("MATCH (n:Person{username: $username}) return n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
               "username" : un,
                "password" : pw,
           })
@@ -157,9 +172,16 @@ func drive(uri, username, password string, cm ChannelPool) {
         }
         //res := false
         for result.Next() {
-            fmt.Println(login.password, result.Record().GetByIndex(0).(string))
-            if login.password == result.Record().GetByIndex(0).(string) {
+            //fmt.Println(login.password, result.Record().GetByIndex(0).(string))
+            fn := result.Record().GetByIndex(0).(string)
+            ln := result.Record().GetByIndex(1).(string)
+            un := result.Record().GetByIndex(2).(string)
+            pw := result.Record().GetByIndex(3).(string)
+            if login.password == pw {
                 cm.loginGood <- true
+                user := &User{fn, ln, un, pw}
+                //print_user_info(*user)
+                cm.loggedIn <- *user
             } else {
                 cm.loginGood <- false
             }
@@ -199,7 +221,7 @@ func main() {
     */
     cm = pool_init()
     go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
-
+    var current_user User
     for {
         if logged_in == false {
             fmt.Println("Log in with your username and password: ")
@@ -216,6 +238,8 @@ func main() {
             logged_in = login
             if login == false {
                 fmt.Println("ERROR: incorrect login information for", user, ".")
+            } else {
+                current_user = <-cm.loggedIn
             }
         }
         if logged_in {
@@ -301,22 +325,28 @@ func main() {
                 fmt.Scanln(&option2)
 
                 if strings.ToLower(option2) == "create" || option2 == "1" {
+                    scanner := bufio.NewScanner(os.Stdin)
                     var username string
                     fmt.Println("Username: ")
                     fmt.Printf("nexus> ")
-                    fmt.Scanln(&username)
+                    //fmt.Scanln(&username)
+                    scanner.Scan()
+                    username = scanner.Text()
                     fmt.Println("Address: ")
                     fmt.Printf("nexus> ")
                     var address string
-                    fmt.Scanln(&address)
+                    scanner.Scan()
+                    address = scanner.Text()
+                    //fmt.Scanln(&address)
                     cm.create_house(username, address)
                     time.Sleep(time.Millisecond * 500)
                 } else if strings.ToLower(option2) == "join" || option2 == "2" {
                     var username string
-                    fmt.Println("Username: ")
+                    fmt.Println("Target Username: ")
                     fmt.Printf("nexus> ")
                     fmt.Scanln(&username)
-                    //cm.joinHouse(username)
+                    cm.join_house(username, current_user.username)
+                    time.Sleep(time.Millisecond * 500)
                 }
 
                 } else if strings.ToLower(option) == "e" || strings.ToLower(option) == "exit" || option == "7" {
