@@ -56,3 +56,12 @@ print("Success")
 
 with open('dataset.json', 'w') as outfile:
     json.dump(dataset, outfile, indent=4)
+
+with open('input.txt', 'w') as out:
+    for u in dataset:
+        out.write(str(1) + "\n")
+        out.write(u['first_name'] + "\n")
+        out.write(u['last_name'] + "\n")
+        out.write(u['username'] + "\n")
+        out.write(u['password'] + "\n")
+    out.write(str(8) + "\n")
