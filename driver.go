@@ -202,6 +202,32 @@ func drive(uri, username, password string, cm ChannelPool) {
 				fmt.Printf("\nHousemate %s is now at risk!\n", result.Record().GetByIndex(0).(string))
 			}*/
 			fmt.Println("Friends and housemates are now exposed!")
+		case house_raw := <-cm.createHouseRaw:
+			addr := house_raw.address
+			result, err := session.Run("create (h:House{address: $addr, should_quarantine: 'false'}) return h.address", map[string]interface{}{
+				"addr": addr,
+			})
+			if err != nil {
+				fmt.Println("Error:\n", err)
+				return
+			}
+			//fmt.Println("query fine\n")
+			for result.Next() {
+				fmt.Printf("\nCreated House with address %s\n", result.Record().GetByIndex(0).(string))
+			}
+		case join_addr := <-cm.joinHouseAddr:
+			result, err := session.Run("match (n:Person{username: $target_user}), (h:House{address: $addr}) create (n)-[:HOUSE]->(h) return n.username, h.address", map[string]interface{}{
+				"target_user":  join_addr.target_user,
+				"addr": join_addr.address,
+			})
+			if err != nil {
+				fmt.Println("Error:\n", err)
+				return
+			}
+			//fmt.Println("query fine\n")
+			for result.Next() {
+				fmt.Printf("\n%s joined House with address %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string))
+			}
 		case login := <-cm.loginChannel:
 			un := login.username
 			//fmt.Println("Received username =", un)
@@ -380,7 +406,7 @@ func main() {
 
 			} else if strings.ToLower(option) == "house" || option == "6" {
 				var option2 string
-				fmt.Println("1. create (username, address)\n2. join (username) ")
+				fmt.Println("1. create (username, address)\n2. join (username)\n3. Join by username and address\n4. Create house with address")
 				fmt.Printf("nexus> ")
 				fmt.Scanln(&option2)
 
@@ -406,6 +432,31 @@ func main() {
 					fmt.Printf("nexus> ")
 					fmt.Scanln(&username)
 					cm.join_house(username, current_user.username)
+					time.Sleep(time.Millisecond * 100)
+				} else if strings.ToLower(option2) == "address" || option2 == "3" {
+					scanner := bufio.NewScanner(os.Stdin)
+					var username string
+					fmt.Println("Username: ")
+					fmt.Printf("nexus> ")
+					//fmt.Scanln(&username)
+					scanner.Scan()
+					username = scanner.Text()
+					fmt.Println("Address: ")
+					fmt.Printf("nexus> ")
+					var address string
+					scanner.Scan()
+					address = scanner.Text()
+					cm.join_house_address(username, address)
+					time.Sleep(time.Millisecond * 100)
+				} else if strings.ToLower(option2) == "house" || option2 == "4" {
+					scanner := bufio.NewScanner(os.Stdin)
+					fmt.Println("Address: ")
+					fmt.Printf("nexus> ")
+					var address string
+					scanner.Scan()
+					address = scanner.Text()
+					//fmt.Scanln(&address)
+					cm.create_house_raw(address)
 					time.Sleep(time.Millisecond * 100)
 				}
 

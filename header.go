@@ -39,9 +39,19 @@ type House struct {
 	should_quarantine	string
 }
 
+type HouseRaw struct {
+	address  string
+	should_quarantine	string
+}
+
 type Join struct {
 	target_user  string //username of Person to join the House of
 	current_user string //username of Person currently logged in; used to create relationship for current_user->House
+}
+
+type JoinAddr struct {
+	target_user  string //username of Person to join the House of
+	address string //address of house to join
 }
 
 type HouseQuery struct {
@@ -63,6 +73,8 @@ type ChannelPool struct {
 	get_house         chan HouseQuery
 	send_friends_list chan map[string]User
 	notify_chan		chan string
+	createHouseRaw	chan HouseRaw
+	joinHouseAddr 	chan JoinAddr
 }
 
 func pool_init() ChannelPool {
@@ -80,6 +92,8 @@ func pool_init() ChannelPool {
 	cm.joinHouse = make(chan Join, 1024)
 	cm.get_house = make(chan HouseQuery, 1024)
 	cm.notify_chan = make(chan string, 1024)
+	cm.createHouseRaw = make(chan HouseRaw, 1024)
+	cm.joinHouseAddr = make(chan JoinAddr, 1024)
 	return cm //return pointer to newly initialized ChannelPool struct
 }
 
@@ -147,9 +161,19 @@ func (cm ChannelPool) create_house(username, address string) {
 	cm.createHouse <- *house
 }
 
+func (cm ChannelPool) create_house_raw(address string) {
+	house := &HouseRaw{address, "false"}
+	cm.createHouseRaw <- *house
+}
+
 func (cm ChannelPool) join_house(username, current_user string) {
 	join := &Join{username, current_user}
 	cm.joinHouse <- *join
+}
+
+func (cm ChannelPool) join_house_address(username, addr string) {
+	join := &JoinAddr{username, addr}
+	cm.joinHouseAddr <- *join
 }
 
 func (cm ChannelPool) get_friends(username string) {
