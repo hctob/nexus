@@ -203,6 +203,19 @@ func drive(uri, username, password string, cm ChannelPool) {
 				fmt.Printf("\nHousemate %s is now at risk!\n", result.Record().GetByIndex(0).(string))
 			}*/
 			fmt.Println("Friends and housemates are now exposed!")
+		case test := <-cm.update_test:
+			result, err := session.Run("match (n:Person{username: $username}) set n.at_risk = $result set n.last_infected_time = $date return n.result, n.last_infected_time, n.username", map[string]interface{}{
+				"username": test.username,
+				"result": test.result,
+				"date": test.date,
+			})
+			if err != nil {
+				fmt.Println("Error:\n", err)
+				return
+			}
+			for result.Next() {
+				fmt.Printf("\nUpdated most recent test results for %s:\nresult: %s\tdate: %s\n", result.Record().GetByIndex(2).(string), result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string))
+			}
 		case house_raw := <-cm.createHouseRaw:
 			addr := house_raw.address
 			result, err := session.Run("create (h:House{address: $addr, should_quarantine: 'false'}) return h.address", map[string]interface{}{
@@ -337,7 +350,7 @@ func main() {
 			fmt.Printf("nexus> ")
 			fmt.Scanln(&option)
 			if strings.ToLower(option) == "me" || strings.ToLower(option) == "current" || strings.ToLower(option) == "this" || option == "0" {
-				print_user_info(current_user)
+				cm.get_person(current_user.username)
 			} else if strings.ToLower(option) == "create" || option == "1" {
 				fmt.Println("Enter a create Person query: (first name, last name, username, password)")
 				var first string
@@ -364,22 +377,45 @@ func main() {
 				time.Sleep(time.Millisecond * 100)
 
 			} else if strings.ToLower(option) == "update" || option == "2" {
-				var user string
-				fmt.Println("Username: ")
+				var option2 string
+				fmt.Println("1. update property \n2. update test results (result, date, username)")
 				fmt.Printf("nexus> ")
-				fmt.Scanln(&user)
+				fmt.Scanln(&option2)
 
-				var property string
-				fmt.Println("Property: ")
-				fmt.Printf("nexus> ")
-				fmt.Scanln(&property)
+				if strings.ToLower(option2) == "property" || option2 == "1" {
+					var user string
+					fmt.Println("Username: ")
+					fmt.Printf("nexus> ")
+					fmt.Scanln(&user)
 
-				var value string
-				fmt.Println("Value: ")
-				fmt.Printf("nexus> ")
-				fmt.Scanln(&value)
-				//var update = &Update {user, property, value}
-				cm.update_by_username(user, property, value)
+					var property string
+					fmt.Println("Property: ")
+					fmt.Printf("nexus> ")
+					fmt.Scanln(&property)
+
+					var value string
+					fmt.Println("Value: ")
+					fmt.Printf("nexus> ")
+					fmt.Scanln(&value)
+					//var update = &Update {user, property, value}
+					cm.update_by_username(user, property, value)
+					time.Sleep(time.Millisecond * 100)
+				} else if strings.ToLower(option2) == "test" || option2 == "2" {
+					var result string
+					fmt.Println("Result: ")
+					fmt.Printf("nexus> ")
+					fmt.Scanln(&result)
+					var date string
+					fmt.Println("Date: ")
+					fmt.Printf("nexus> ")
+					fmt.Scanln(&date)
+					var username string
+					fmt.Println("Username: ")
+					fmt.Printf("nexus> ")
+					fmt.Scanln(&username)
+					cm.add_test(result, date, username)
+					time.Sleep(time.Millisecond * 100)
+				}
 				time.Sleep(time.Millisecond * 100)
 
 			} else if strings.ToLower(option) == "get" || option == "3" {

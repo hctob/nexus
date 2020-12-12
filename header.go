@@ -93,7 +93,7 @@ func pool_init() ChannelPool {
 	cm.getNodeChannel = make(chan string, 1024)
 	cm.friendChannel = make(chan Friends, 1024)
 	cm.loginChannel = make(chan Login, 1024)
-	cm.loggedIn = make(chan User)
+	cm.loggedIn = make(chan User, 1024)
 	cm.get_friends_list = make(chan string, 1024)
 	cm.send_friends_list = make(chan map[string]User, 1024)
 	cm.createHouse = make(chan House, 1024)
