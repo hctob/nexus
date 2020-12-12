@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Nexus: Dashboard</title>
+        <!--Search engine result description-->
+        <meta name="description" content="Welcome to Nexus.">
+        <!--Keywords for search engine-->
+        <meta name="keywords" content="nexus, cs476">
+        <meta name="author" content="Dan Bottcher,William Kennedy, Milton Peraza, Joe Sanchez">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--Links the external .css file located in the /css/ folder-->
+        <link rel="stylesheet" href="css/dash.css" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+
+    <body>
+        <div class="main-container">
+            <h1> Welcome, {{.Firstname}} {{.Lastname}}!</h1>
+            <h2>User info: </h2>
+            <p>Username: {{.Username}}</p>
+            <p>Password: {{.Password}}</p>
+            <p>Password: {{.Atrisk}}</p>
+        </div>
+    </body>
+</html>

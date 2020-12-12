@@ -19,8 +19,8 @@ import (
 
 var (
 	arg_uri     = flag.String("uri", "bolt://localhost:7687", "The URI for the Nexus database, to connect to it.")
-    arg_username_raw     = flag.String("u", "neo4j", "Usernames are unique identifiers for database users.")
-    arg_password_raw     = flag.String("p", "cs476", "Unencrypted password for selected username.")
+    arg_username_raw     = flag.String("u", "test", "Usernames are unique identifiers for database users.")
+    arg_password_raw     = flag.String("p", "test", "Unencrypted password for selected username.")
     cm_global * ChannelPool
     w_global http.ResponseWriter
     logged_in = false
@@ -340,8 +340,9 @@ func update_test(w http.ResponseWriter, req *http.Request){
     newest_result, _ := strconv.ParseBool(obj["Result"])
     if(newest_result){
       diff := now.Sub(sent).Hours() / 24
-      if(diff < 5){
+      if(diff < 14){
         (*cm_global).add_test("true", obj["Date"], obj["Username"])
+		(*cm_global).notify_house(obj["Username"])
       }else{
         (*cm_global).add_test("false", obj["Date"], obj["Username"])
       }
@@ -367,6 +368,42 @@ func friend_list(w http.ResponseWriter, req *http.Request){
     fmt.Println(obj["Username"])
     (*cm_global).get_friends(obj["Username"])
 
+  }
+}
+
+func add_house(w http.ResponseWriter, req *http.Request){
+  if req.Method == http.MethodPost{
+    var obj map[string]string
+    body, readErr := ioutil.ReadAll(req.Body)
+    if readErr != nil{
+      panic(readErr)
+    }
+    err := json.Unmarshal(body, &obj)
+    if err != nil{
+      panic(err)
+      http.Error(w, err.Error(), http.StatusBadRequest)
+    }
+    fmt.Println(obj["Username"])
+    fmt.Println(obj["Housename"])
+    (*cm_global).create_house(obj["Username"], obj["Housename"])
+  }
+}
+
+func join_house(w http.ResponseWriter, req *http.Request){
+  if req.Method == http.MethodPost{
+    var obj map[string]string
+    body, readErr := ioutil.ReadAll(req.Body)
+    if readErr != nil{
+      panic(readErr)
+    }
+    err := json.Unmarshal(body, &obj)
+    if err != nil{
+      panic(err)
+      http.Error(w, err.Error(), http.StatusBadRequest)
+    }
+    fmt.Println(obj["Username"])
+    fmt.Println(obj["Housename"])
+    (*cm_global).join_house_address(obj["Username"], obj["Housename"])
   }
 }
 
@@ -411,6 +448,8 @@ func main() {
     http.HandleFunc("/friends-list", friend_list)
     http.HandleFunc("/update-test", update_test)
     http.HandleFunc("/login", get_login)
+	http.HandleFunc("/create-house", add_house)
+    http.HandleFunc("/join-house", join_house)
     http.ListenAndServe(":8090", nil)
 
     /*for {

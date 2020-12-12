@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div class="container">
+      <label for="housename"><b>Join a house</b></label>
+      <input type="text" placeholder="Enter House Address" name="housename" id="housename" required>
+
+      <button type="submit" id="sub">Join House</button>
+    </div>
+    <script>
+    function getUsername(){
+      var theCookies = document.cookie.split(';');
+      var u_name = null;
+      for(var i = 0; i < theCookies.length; i++){
+        var temp = theCookies[i].substring(0,theCookies[i].length).split("=");
+        if(temp[0].substring(0, temp[0].length).trim() == "Username"){
+          u_name = temp[1].trim();
+        }
+      }
+      console.log(u_name);
+      return u_name;
+    }
+
+    document.getElementById("sub").addEventListener("click", ()=>{
+      let result = document.querySelector('.result');
+      let xhr = new XMLHttpRequest();
+      let url = "/join-house";
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4 && xhr.status == 200){
+          //result.innerHTML = this.responseText;
+        }
+      }
+      var data = JSON.stringify({"Username": getUsername(), "Housename": document.querySelector('#housename').value});
+      console.log(data);
+      xhr.send(data);
+    });
+    </script>
+  </body>
+</html>

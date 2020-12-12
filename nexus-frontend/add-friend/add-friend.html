@@ -1,0 +1,45 @@
+<<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div class="container">
+      <label for="username"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="username" id="username" required>
+
+      <button type="submit" id="sub">Add Friend</button>
+    </div>
+    <script>
+    function getUsername(){
+      var theCookies = document.cookie.split(';');
+      var u_name = null;
+      for(var i = 1; i < theCookies.length; i++){
+        var temp = theCookies[i].substring(0,theCookies[i].length).split("=");
+        if(temp[0].substring(0, temp[0].length) == "Username"){
+          u_name = temp[1];
+        }
+      }
+      console.log(u_name);
+      return u_name;
+    }
+
+    document.getElementById("sub").addEventListener("click", ()=>{
+      let result = document.querySelector('.result');
+      let xhr = new XMLHttpRequest();
+      let url = "/add-friend";
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4 && xhr.status == 200){
+          //result.innerHTML = this.responseText;
+        }
+      }
+      var data = JSON.stringify({"Username": getUsername(), "Friend_username": document.querySelector('#username').value});
+      console.log(data);
+      xhr.send(data);
+    });
+    </script>
+  </body>
+</html>
