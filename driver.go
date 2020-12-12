@@ -191,7 +191,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 		case username := <-cm.notify_chan:
 			//fmt.Println("Username: ", username)
 			//match (p)-[:FRIEND]->(f:Person) set f.at_risk = 'true' will also set all friends to true
-			_, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p:Person) match (p)-[:FRIEND]->(f:Person) set f.at_risk = 'true' set n.at_risk = 'exposed' set p.at_risk = 'true' set h.should_quarantine = 'true'", map[string]interface{}{
+			_, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p:Person) match (p)-[:FRIEND]->(f:Person) set f.at_risk = 'true' set n.at_risk = 'positive' set p.at_risk = 'true' set h.should_quarantine = 'true'", map[string]interface{}{
 				"input": username,
 			})
 			if err != nil {
