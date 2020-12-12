@@ -96,7 +96,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 				fmt.Printf("\n%s joined House with address %s\n", join.current_user, result.Record().GetByIndex(0).(string))
 			}
 		case username := <-cm.get_friends_list:
-			result, err := session.Run("match (n:Person{username: $username})-[r:FRIEND]->(f) return f.first_name, f.last_name, f.username, f.at_risk, f.last_infected_time", map[string]interface{}{
+			result, err := session.Run("match (n:Person{username: $username})-[r:FRIEND]->(f) return f.first_name, f.last_name, f.username, f.at_risk, f.last_infected_time order by f.last_infected_time desc limit 50", map[string]interface{}{
 				"username": username,
 			})
 			if err != nil {
