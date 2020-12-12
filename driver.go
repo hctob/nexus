@@ -49,12 +49,13 @@ func drive(uri, username, password string, cm ChannelPool) {
 		select {
 		case user := <-cm.createChannel:
 			//fmt.Println("Create user message received")
-			result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name, username: $username, password: $password, at_risk: $status}) RETURN n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
+			result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name, username: $username, password: $password, at_risk: $status, last_infected_time: $lid}) RETURN n.first_name, n.last_name, n.username, n.password, n.last_infected_time", map[string]interface{}{
 				"first_name": user.first_name,
 				"last_name":  user.last_name,
 				"username":   user.username,
 				"password":   user.password,
 				"status": 	  user.at_risk,
+				"lid":	user.last_infected_time,
 			})
 
 			if err != nil {
@@ -95,7 +96,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 				fmt.Printf("\n%s joined House with address %s\n", join.current_user, result.Record().GetByIndex(0).(string))
 			}
 		case username := <-cm.get_friends_list:
-			result, err := session.Run("match (n:Person{username: $username})-[r:FRIEND]->(f) return f.first_name, f.last_name, f.username", map[string]interface{}{
+			result, err := session.Run("match (n:Person{username: $username})-[r:FRIEND]->(f) return f.first_name, f.last_name, f.username, f.at_risk, f.last_infected_time", map[string]interface{}{
 				"username": username,
 			})
 			if err != nil {
@@ -105,7 +106,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 			//fmt.Println("query fine\n")
 			fmt.Printf("\nFriends list of %s: \n", username)
 			for result.Next() {
-				fmt.Printf("%s %s: %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+				fmt.Printf("%s %s: %s, at_risk = %s, last infected time = %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string), result.Record().GetByIndex(4).(string))
 			}
 		case update := <-cm.updateChannel:
 			//update_user(update.username, update.property, update.value, &session)
@@ -130,7 +131,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 				fmt.Printf("Updated %s %s to %s\n", update.username, update.property, result.Record().GetByIndex(0).(string))
 			}
 		case username := <-cm.getNodeChannel:
-			result, err := session.Run("match (n:Person {username: $u_name}) return n.first_name, n.last_name, n.username, n.password, n.at_risk", map[string]interface{}{
+			result, err := session.Run("match (n:Person {username: $u_name}) return n.first_name, n.last_name, n.username, n.password, n.at_risk, n.last_infected_time", map[string]interface{}{
 				"u_name": username})
 
 			if err != nil {
@@ -139,7 +140,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 			}
 			//fmt.Println("query fine\n")
 			for result.Next() {
-				fmt.Printf("\nNode: \"%s %s\":\nusername: %s\npassword: %s\nat_risk: %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string), result.Record().GetByIndex(4).(string))
+				fmt.Printf("\nNode: \"%s %s\":\nusername: %s\npassword: %s\nat_risk: %s\nlast infected_time = %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string), result.Record().GetByIndex(4).(string), result.Record().GetByIndex(5).(string))
 			}
 		case houseQuery := <-cm.get_house:
 			input := houseQuery.input
@@ -147,7 +148,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 
 			if isUsername == true {
                 //use username of person in house
-				result, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p) return p.username, p.first_name, p.last_name, p.at_risk", map[string]interface{}{
+				result, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p) return p.username, p.first_name, p.last_name, p.at_risk, p.last_infected_time", map[string]interface{}{
 					"input": input,
 				})
 				if err != nil {
@@ -156,11 +157,11 @@ func drive(uri, username, password string, cm ChannelPool) {
 				}
 				fmt.Printf("%s's household:\n", input)
 				for result.Next() {
-					fmt.Printf("\t%s: %s %s, at_risk=%s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
+					fmt.Printf("\t%s: %s %s, at_risk=%s, last infected time: %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string), result.Record().GetByIndex(4).(string))
 				}
 			} else {
 				//use address for query
-				result, err := session.Run("match (h:House{address: $input})<--(n) return n.username, n.first_name, n.last_name, n.at_risk", map[string]interface{}{
+				result, err := session.Run("match (h:House{address: $input})<--(n) return n.username, n.first_name, n.last_name, n.at_risk, n.last_infected_time", map[string]interface{}{
 					"input": input,
 				})
 				if err != nil {
@@ -169,7 +170,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 				}
 				fmt.Printf("House @ %s:\n", input)
 				for result.Next() {
-					fmt.Printf("\t%s: %s %s, at_risk=%s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
+					fmt.Printf("\t%s: %s %s, at_risk=%s, last infected time: %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string), result.Record().GetByIndex(4).(string))
 				}
 			}
 		case friends := <-cm.friendChannel:
@@ -191,7 +192,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 		case username := <-cm.notify_chan:
 			//fmt.Println("Username: ", username)
 			//match (p)-[:FRIEND]->(f:Person) set f.at_risk = 'true' will also set all friends to true
-			_, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p:Person) match (p)-[:FRIEND]->(f:Person) set f.at_risk = 'true' set n.at_risk = 'positive' set p.at_risk = 'true' set h.should_quarantine = 'true'", map[string]interface{}{
+			_, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p:Person) match (p)-[:FRIEND]->(f:Person) set f.at_risk = 'true' set p.at_risk = 'true' set n.at_risk = 'positive' set h.should_quarantine = 'true'", map[string]interface{}{
 				"input": username,
 			})
 			if err != nil {
@@ -234,13 +235,13 @@ func drive(uri, username, password string, cm ChannelPool) {
 			pw := login.password
             if un == "admin" && (pw == "test" || pw == "ye") {
                 cm.loginGood <- true
-                user := &User{un, "", un, pw, "false"}
+                user := &User{un, "", un, pw, "false", "N/A"}
                 //print_user_info(*user)
                 cm.loggedIn <- *user
                 return
             }
 			//fmt.Println("Received password =", pw)
-			result, err := session.Run("MATCH (n:Person{username: $username}) return n.first_name, n.last_name, n.username, n.password, n.at_risk", map[string]interface{}{
+			result, err := session.Run("MATCH (n:Person{username: $username}) return n.first_name, n.last_name, n.username, n.password, n.at_risk, n.last_infected_time", map[string]interface{}{
 				"username": un,
 				"password": pw,
 			})
@@ -257,9 +258,10 @@ func drive(uri, username, password string, cm ChannelPool) {
 				un := result.Record().GetByIndex(2).(string)
 				pw := result.Record().GetByIndex(3).(string)
 				ar := result.Record().GetByIndex(4).(string)
+				lid := result.Record().GetByIndex(5).(string)
 				if login.password == pw {
 					cm.loginGood <- true
-					user := &User{fn, ln, un, pw, ar}
+					user := &User{fn, ln, un, pw, ar, lid}
 					//print_user_info(*user)
 					cm.loggedIn <- *user
 				} else {
@@ -331,10 +333,12 @@ func main() {
 			var option string
 			time.Sleep(time.Millisecond * 250)
 			fmt.Println("\nOptions: ")
-			fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Create Friend relationship\n5. View friends list of a given user\n6. Create/join a house\n7. Get household members (address/username)\n8. I'm exposed to COVID!!\n9. Exit")
+			fmt.Println("0. View current user (0, current, me, this)\n1. Create a user (1, create): \n2. Update a specific property of a Person node (2, update)\n3. Get a node by username (3, get)\n4. Create Friend relationship (4, friend, friends)\n5. View friends list of a given user (5, list, friends_list)\n6. Create/join a house (6, house)\n7. Get household members (7, household)\n8. I'm exposed to COVID!! (8, covid, covid-19)\n9. Exit (9, e, exit)")
 			fmt.Printf("nexus> ")
 			fmt.Scanln(&option)
-			if strings.ToLower(option) == "create" || option == "1" {
+			if strings.ToLower(option) == "me" || strings.ToLower(option) == "current" || strings.ToLower(option) == "this" || option == "0" {
+				print_user_info(current_user)
+			} else if strings.ToLower(option) == "create" || option == "1" {
 				fmt.Println("Enter a create Person query: (first name, last name, username, password)")
 				var first string
 				fmt.Println("First name: ")

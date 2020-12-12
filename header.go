@@ -15,6 +15,7 @@ type User struct {
 	username   string
 	password   string
 	at_risk		string
+	last_infected_time	string
 }
 
 type Update struct {
@@ -59,6 +60,12 @@ type HouseQuery struct {
 	isUsername bool //determines whether we are using a username or address as input
 }
 
+type Test struct {
+	result	string
+	date	string
+	username string
+}
+
 type ChannelPool struct {
 	createChannel     chan User //channel for creating a new user
 	updateChannel     chan Update
@@ -75,6 +82,7 @@ type ChannelPool struct {
 	notify_chan		chan string
 	createHouseRaw	chan HouseRaw
 	joinHouseAddr 	chan JoinAddr
+	update_test		chan Test
 }
 
 func pool_init() ChannelPool {
@@ -94,6 +102,7 @@ func pool_init() ChannelPool {
 	cm.notify_chan = make(chan string, 1024)
 	cm.createHouseRaw = make(chan HouseRaw, 1024)
 	cm.joinHouseAddr = make(chan JoinAddr, 1024)
+	cm.update_test = make(chan Test, 1024)
 	return cm //return pointer to newly initialized ChannelPool struct
 }
 
@@ -102,7 +111,7 @@ func pool_init() ChannelPool {
 * Creates a Person node with the specified properties
  */
 func (cm ChannelPool) create_person(first_name, last_name, username, password string) {
-	var user = &User{first_name, last_name, username, password, "false"}
+	var user = &User{first_name, last_name, username, password, "false", "N/A"}
 	cm.createChannel <- *user
 }
 
@@ -190,8 +199,13 @@ func (cm ChannelPool) notify_house(username string) {
 	cm.notify_chan <- username
 }
 
+func (cm ChannelPool) add_test(result, date, username string) {
+	test := &Test{result, date, username}
+	cm.update_test <- *test
+}
+
 func print_user_info(user User) {
-	fmt.Printf("\nUser: \"%s\"\nfirst_name: %s\nlast_name: %s\nat_risk: %s", user.username, user.first_name, user.last_name, user.at_risk)
+	fmt.Printf("\nUser: \"%s\"\nfirst_name: %s\nlast_name: %s\nat_risk: %s\nlast_infected_time: %s\n", user.username, user.first_name, user.last_name, user.at_risk, user.last_infected_time)
 }
 
 //connects a person to a house
