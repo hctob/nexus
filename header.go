@@ -13,6 +13,8 @@ type User struct {
     last_name string
     username string
     password string
+    at_risk		string
+	  last_infected_time	string
 }
 
 type Update struct {
@@ -31,32 +33,83 @@ type Login struct {
     password string
 }
 
+type House struct {
+	username string
+	address  string
+	should_quarantine	string
+}
+
+type HouseRaw struct {
+	address  string
+	should_quarantine	string
+}
+
+type Join struct {
+	target_user  string //username of Person to join the House of
+	current_user string //username of Person currently logged in; used to create relationship for current_user->House
+}
+
+type JoinAddr struct {
+	target_user  string //username of Person to join the House of
+	address string //address of house to join
+}
+
+type HouseQuery struct {
+	input      string
+	isUsername bool //determines whether we are using a username or address as input
+}
+
+type Test struct {
+	result	string
+	date	string
+	username string
+}
 
 type ChannelPool struct {
-    createChannel  chan User     //channel for creating a new user
-    updateChannel chan Update
-    getNodeChannel   chan string
-    friendChannel   chan Friends
-    loginChannel    chan Login
-    loginGood     chan bool
+	createChannel     chan User //channel for creating a new user
+	updateChannel     chan Update
+	getNodeChannel    chan string
+	friendChannel     chan Friends
+	loginChannel      chan Login
+	loginGood         chan bool
+	loggedIn          chan User
+	createHouse       chan House
+	joinHouse         chan Join
+	get_friends_list  chan string
+	get_house         chan HouseQuery
+	send_friends_list chan map[string]User
+	notify_chan		chan string
+	createHouseRaw	chan HouseRaw
+	joinHouseAddr 	chan JoinAddr
+	update_test		chan Test
 }
 
 func pool_init() ChannelPool {
-    var cm ChannelPool
-    cm.createChannel = make(chan User, 128)
-    cm.loginGood = make(chan bool)
-    cm.updateChannel = make(chan Update, 128)
-    cm.getNodeChannel = make(chan string, 128)
-    cm.friendChannel = make(chan Friends, 128)
-    cm.loginChannel = make(chan Login, 128)
-    return cm  //return pointer to newly initialized ChannelPool struct
+  var cm ChannelPool
+  cm.createChannel = make(chan User, 1024)
+  cm.loginGood = make(chan bool)
+  cm.updateChannel = make(chan Update, 1024)
+  cm.getNodeChannel = make(chan string, 1024)
+  cm.friendChannel = make(chan Friends, 1024)
+  cm.loginChannel = make(chan Login, 1024)
+  cm.loggedIn = make(chan User, 1024)
+  cm.get_friends_list = make(chan string, 1024)
+  cm.send_friends_list = make(chan map[string]User, 1024)
+  cm.createHouse = make(chan House, 1024)
+  cm.joinHouse = make(chan Join, 1024)
+  cm.get_house = make(chan HouseQuery, 1024)
+  cm.notify_chan = make(chan string, 1024)
+  cm.createHouseRaw = make(chan HouseRaw, 1024)
+  cm.joinHouseAddr = make(chan JoinAddr, 1024)
+  cm.update_test = make(chan Test, 1024)
+  return cm //return pointer to newly initialized ChannelPool struct
 }
 /*
 *
 * Creates a Person node with the specified properties
 */
 func (cm ChannelPool) create_person(first_name, last_name, username, password string) {
-    var user = &User {first_name, last_name, username, password}
+    var user = &User {first_name, last_name, username, password, "false", "N/A"}
     cm.createChannel <- *user
 }
 
@@ -108,6 +161,49 @@ func (cm ChannelPool) login(username, password string) bool {
     cm.loginChannel <- *logInfo
     good := <-cm.loginGood
     return good
+}
+
+func (cm ChannelPool) create_house(username, address string) {
+	house := &House{username, address, "false"}
+	cm.createHouse <- *house
+}
+
+func (cm ChannelPool) create_house_raw(address string) {
+	house := &HouseRaw{address, "false"}
+	cm.createHouseRaw <- *house
+}
+
+func (cm ChannelPool) join_house(username, current_user string) {
+	join := &Join{username, current_user}
+	cm.joinHouse <- *join
+}
+
+func (cm ChannelPool) join_house_address(username, addr string) {
+	join := &JoinAddr{username, addr}
+	cm.joinHouseAddr <- *join
+}
+
+func (cm ChannelPool) get_friends(username string) {
+	cm.get_friends_list <- username
+	//usermap := make(map[string]User)
+}
+
+func (cm ChannelPool) get_household(input string, isUsername bool) {
+	houseQuery := &HouseQuery{input, isUsername}
+	cm.get_house <- *houseQuery
+}
+
+func (cm ChannelPool) notify_house(username string) {
+	cm.notify_chan <- username
+}
+
+func (cm ChannelPool) add_test(result, date, username string) {
+	test := &Test{result, date, username}
+	cm.update_test <- *test
+}
+
+func print_user_info(user User) {
+	fmt.Printf("\nUser: \"%s\"\nfirst_name: %s\nlast_name: %s\nat_risk: %s\nlast_infected_time: %s\n", user.username, user.first_name, user.last_name, user.at_risk, user.last_infected_time)
 }
 
 //connects a person to a house

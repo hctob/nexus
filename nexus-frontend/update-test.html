@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <input type="checkbox" id="result" name="result"
+           checked>
+        <label for="result">Positive</label>
+      </div>
+      <div>
+        <label for="test-date"><b>Date Tested</b></label>
+        <input type="date" id="test-date" name="test-date"
+         min="2019-01-01" max="2020-12-12">
+       </div>
+
+      <button type="submit" id="sub">Update</button>
+    </div>
+    <script>
+    function getUsername(){
+      var theCookies = document.cookie.split(';');
+      var u_name = null;
+      for(var i = 1; i < theCookies.length; i++){
+        var temp = theCookies[i].substring(0,theCookies[i].length).split("=");
+        if(temp[0].substring(1, temp[0].length) == "Username"){
+          u_name = temp[1];
+        }
+      }
+      console.log(u_name);
+      return u_name;
+    }
+    document.getElementById("sub").addEventListener("click", ()=>{
+      let result = document.querySelector('.result');
+      let xhr = new XMLHttpRequest();
+      let url = "/update-test";
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4 && xhr.status == 200){
+          //result.innerHTML = this.responseText;
+        }
+      }
+      var test_result = document.getElementById("result").checked ? "true":"false";
+      var data = JSON.stringify({"Result": test_result,
+                                  "Date": document.querySelector('#test-date').value,
+                                "Username": getUsername()});
+      console.log(data);
+      xhr.send(data);
+    });
+      </script>
+  </body>
+</html>
