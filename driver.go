@@ -11,6 +11,7 @@ import (
     "io/ioutil"
     "strconv"
     "time"
+    //"strings"
     //"html/template"
     //"log"
 )
@@ -21,7 +22,7 @@ var (
     arg_username_raw     = flag.String("u", "neo4j", "Usernames are unique identifiers for database users.")
     arg_password_raw     = flag.String("p", "cs476", "Unencrypted password for selected username.")
     cm_global * ChannelPool
-
+    w_global http.ResponseWriter
     logged_in = false
     totalQueries int64
 )
@@ -108,9 +109,20 @@ func drive(uri, username, password string, cm ChannelPool) {
     			}
     			//fmt.Println("query fine\n")
     			fmt.Printf("\nFriends list of %s: \n", username)
+          //var sb strings.Builder
+          ret := "["
+          fmt.Println("working1\n")
     			for result.Next() {
-    				fmt.Printf("%s %s: %s, at_risk = %s, last infected time = %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string), result.Record().GetByIndex(4).(string))
+            ret = ret + fmt.Sprintf("{\"first_name\": %s, \"last_name\": %s, \"username\": %s, \"at_risk\": %s, \"last_infected_time\": %s}, ", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(4).(string), result.Record().GetByIndex(5).(string))
+
+    				//fmt.Printf("%s %s: %s, at_risk = %s, last infected time = %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string), result.Record().GetByIndex(4).(string))
     			}
+          fmt.Println("working2\n")
+          ret = ret[:len(ret)-2]
+          ret = ret + "]"
+          fmt.Println(ret)
+          cookie := http.Cookie{Name: "Friends", Value: string(ret)}
+          http.SetCookie(w_global, &cookie)
         case update := <-cm.updateChannel:
             //update_user(update.username, update.property, update.value, &session)
             prop := "n." + update.property
@@ -339,6 +351,25 @@ func update_test(w http.ResponseWriter, req *http.Request){
   }
 }
 
+func friend_list(w http.ResponseWriter, req *http.Request){
+  if req.Method == http.MethodGet{
+    w_global = w
+    var obj map[string]string
+    body, readErr := ioutil.ReadAll(req.Body)
+    if readErr != nil{
+      panic(readErr)
+    }
+    err := json.Unmarshal(body, &obj)
+    if err != nil{
+      panic(err)
+      http.Error(w, err.Error(), http.StatusBadRequest)
+    }
+    fmt.Println(obj["Username"])
+    (*cm_global).get_friends(obj["Username"])
+
+  }
+}
+
 /*
 * Main function for driver
 */
@@ -377,6 +408,7 @@ func main() {
     //cm.create_person("Will", "Kennedy", "neo4j", "neo4j")
     http.Handle("/", http.FileServer(http.Dir("./nexus-frontend")))
     http.HandleFunc("/add-friend", add_friend)
+    http.HandleFunc("/friends-list", friend_list)
     http.HandleFunc("/update-test", update_test)
     http.HandleFunc("/login", get_login)
     http.ListenAndServe(":8090", nil)
