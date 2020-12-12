@@ -1,17 +1,47 @@
-<<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    Main page
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Nexus: Register</title>
+        <!--Search engine result description-->
+        <meta name="description" content="Welcome to Nexus.">
+        <!--Keywords for search engine-->
+        <meta name="keywords" content="nexus, cs476">
+        <meta name="author" content="Dan Bottcher,William Kennedy, Milton Peraza, Joe Sanchez">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--Links the external .css file located in the /css/ folder-->
+        <link rel="stylesheet" href="css/regi.css" type="text/css">
+    </head>
+    <body onload="displayUsername()">
+        <div class="head">
+            <h1>Nexus</h1>
+            <h4>Something something Golang.</h4>
+        </div>
+        <div class="form">
+            <!--<ul class="login-tabs">
+                <li class="tab active l"><a href="#">Register</a></li>
+                <li class="tab"><a href="#">Login</a></li>
+            </ul>-->
+            <div class="form-content">
+              <h1 style="color:white">Friends List</h1>
+            </div>
+            <<button type="submit" id="sub">Add Friends</button>
+        </div>
 
-    <script>
-      document.addEventListener("load", ()=>{
-        console.log("Username:");
-        console.log(document.cookie);
-      });
-    </script>
-  </body>
+        <script>
+          function displayUsername(){
+            var theCookies = document.cookie.split(';');
+            var u_name = null;
+            for(var i = 0; i < theCookies.length; i++){
+              var temp = theCookies[i].substring(0,theCookies[i].length).split("=");
+              if(temp[0].substring(1, temp[0].length) == "Username"){
+                u_name = temp[1];
+              }
+            }
+            console.log(u_name);
+          }
+          document.getElementById("sub").addEventListener("click", ()=>{
+            window.location.href = 'add-friend.html';
+          });
+        </script>
+    </body>
 </html>

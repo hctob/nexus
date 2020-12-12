@@ -163,7 +163,6 @@ type Login_Response struct {
 
 func get_login(w http.ResponseWriter, req *http.Request){
   if req.Method == http.MethodPost{
-    //var user Login_Frontend
     var obj map[string]string
     body, readErr := ioutil.ReadAll(req.Body)
     if readErr != nil{
@@ -179,17 +178,6 @@ func get_login(w http.ResponseWriter, req *http.Request){
     t := (*cm_global).login(obj["Username"], obj["Password"])
     fmt.Println("working")
 
-    /*var t bool
-    for{
-      fmt.Println("loggin in\n")
-      temp, ok := <-(*cm_global).loginGood
-
-      if(ok){
-        fmt.Println("login successful\n")
-        t = temp
-        break
-      }
-    }*/
     cookie := http.Cookie{Name: "Username", Value: string(obj["Username"])}
     http.SetCookie(w, &cookie)
     cookie_status := http.Cookie{Name: "Status", Value: strconv.FormatBool(t)}
@@ -198,30 +186,27 @@ func get_login(w http.ResponseWriter, req *http.Request){
       Username: obj["Username"],
       Status: t,
     }
-    /*w.Header().Set("Content-Type", "text/html; charset=utf-8")
-    templ, err := template.ParseFiles("login-temp.html")
-    if err != nil {
-             fmt.Fprintf(w, "Unable to load template")
-        }
-    templ.Execute(w, info)*/
-
-    //fmt.Println("Login successful: ", t, "\n")
-    /*if(t){
-      info.Status = true
-    }*/
-    //res, e := json.Marshal(info)
 
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(info)
+  }
+}
 
-    //if(e != nil){
-    //  panic("json encoding failed\n")
-    //}
-    //fmt.Println("Object ", res)
-
-    //w.Write(res)
-
-    fmt.Println("working 2")
+func add_friend(w http.ResponseWriter, req *http.Request){
+  if req.Method == http.MethodPost{
+    var obj map[string]string
+    body, readErr := ioutil.ReadAll(req.Body)
+    if readErr != nil{
+      panic(readErr)
+    }
+    err := json.Unmarshal(body, &obj)
+    if err != nil{
+      panic(err)
+      http.Error(w, err.Error(), http.StatusBadRequest)
+    }
+    fmt.Println(obj["Username"])
+    fmt.Println(obj["Friend_username"])
+    (*cm_global).login(obj["Username"], obj["Friend_username"])
   }
 }
 
@@ -252,12 +237,17 @@ func main() {
     cm.updateChannel = make(chan Update, 128)
     cm.getNodeChannel = make(chan string, 128)
     */
+
     cm = pool_init()
     cm_global = &cm
+
+    //cm.create_person("test", "test", "test", "test")
+
     go drive("bolt://localhost:7687", *arg_username_raw, *arg_password_raw, cm)
 
     //cm.create_person("Will", "Kennedy", "neo4j", "neo4j")
     http.Handle("/", http.FileServer(http.Dir("./nexus-frontend")))
+    http.HandleFunc("/add-friend", add_friend)
     http.HandleFunc("/login", get_login)
     http.ListenAndServe(":8090", nil)
 

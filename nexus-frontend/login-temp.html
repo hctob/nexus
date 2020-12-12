@@ -17,9 +17,6 @@
         <button type="submit" id="sub">Login</button>
       </div>
 
-      <h3>Username: {{.Username}} </h3>
-      <h3>Status: {{.Status}} </h3>
-
     <!--</form>-->
     <script>
     function sleep(ms) {
@@ -27,12 +24,9 @@
     }
 
     document.getElementById("sub").addEventListener("click", ()=>{
-      //alert("Hello World!");
-      console.log("working1");
       let result = document.querySelector('.result');
       let xhr = new XMLHttpRequest();
       let url = "/login";
-      console.log("working 2");
       xhr.open("POST", url, true);
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.onreadystatechange = function(){
@@ -40,7 +34,6 @@
           //result.innerHTML = this.responseText;
         }
       }
-      console.log("working 3");
       var data = JSON.stringify({"Username": document.querySelector('#username').value,
                                   "Password": document.querySelector('#password').value});
       console.log(data);
@@ -48,7 +41,6 @@
 
       xhr.onreadystatechange = function(){
         if(xhr.readyState == 4 && xhr.status == 200){
-            //var x = document.cookie;
             var theCookies = document.cookie.split(';');
             var status = null;
             for(var i = 0; i < theCookies.length; i++){
@@ -63,7 +55,6 @@
             if(status){
               window.location.href = 'main-page.html';
             }
-            //window.alert(theCookies[2].length);
         }
       }
 
