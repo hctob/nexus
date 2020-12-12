@@ -19,22 +19,68 @@
         <div class="form">
             <ul class="login-tabs">
                 <li class="tab active l"><a href="#">Register</a></li>
-                <li class="tab"><a href="#">Login</a></li>
+                <li class="tab"><a href="/login.html">Login</a></li>
             </ul>
             <div class="form-content">
                 <div class="field-wrap">
-              <input type="text" required autocomplete="off" placeholder="First name:" />
+              <input type="text" required autocomplete="off" id="first_name" placeholder="First name:" />
             </div>
             <div class="field-wrap">
-              <input type="text" required autocomplete="off" placeholder="Last name:" />
+              <input type="text" required autocomplete="off" id="last_name" placeholder="Last name:" />
             </div>
             <div class="field-wrap">
-              <input type="text" required autocomplete="off" placeholder="Username:" />
+              <input type="text" required autocomplete="off" id="username" placeholder="Username:" />
             </div>
             <div class="field-wrap">
-              <input type="text" required autocomplete="off" placeholder="Password:" />
-            </div>
+              <input type="text" required autocomplete="off" id="password" placeholder="Password:" />
             </div>
         </div>
+        <div class="button">
+          <button type="submit" id="sub">Register</button>
+        </div>
+        <script>
+        function sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        document.getElementById("sub").addEventListener("click", ()=>{
+          let result = document.querySelector('.result');
+          let xhr = new XMLHttpRequest();
+          let url = "/registration";
+          xhr.open("POST", url, true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.onreadystatechange = function(){
+            if(xhr.readyState == 4 && xhr.status == 200){
+              //result.innerHTML = this.responseText;
+            }
+          }
+          var data = JSON.stringify({"Firstname": document.querySelector('#first_name').value,
+                                      "Lastname": document.querySelector('#last_name').value,
+                                      "Username": document.querySelector('#username').value,
+                                      "Password": document.querySelector('#password').value,
+                                    });
+          console.log(data);
+          xhr.send(data);
+
+          xhr.onreadystatechange = function(){
+            if(xhr.readyState == 4 && xhr.status == 200){
+                var theCookies = document.cookie.split(';');
+                var status = null;
+                for(var i = 0; i < theCookies.length; i++){
+                  var temp = theCookies[i].substring(0,theCookies[i].length).split("=");
+                  if(temp[0].substring(0, temp[0].length).trim() == "Status"){
+                    status = (temp[1].trim() == 'true');
+                  }
+                }
+                console.log(status);
+                if(status){
+                  window.location.href = 'main-page.html';
+                }
+            }
+          }
+
+
+        });
+        </script>
     </body>
 </html>

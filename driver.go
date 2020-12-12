@@ -317,6 +317,38 @@ func add_friend(w http.ResponseWriter, req *http.Request){
   }
 }
 
+func get_register(w http.ResponseWriter, req *http.Request){
+  if req.Method == http.MethodPost{
+    var obj map[string]string
+    body, readErr := ioutil.ReadAll(req.Body)
+    if readErr != nil{
+      panic(readErr)
+    }
+    err := json.Unmarshal(body, &obj)
+    if err != nil{
+      panic(err)
+      http.Error(w, err.Error(), http.StatusBadRequest)
+    }
+    fmt.Println("username: ", obj["Username"], "\n")
+    fmt.Println("password: ", obj["Password"], "\n")
+    (*cm_global).create_person(obj["Firstname"], obj["Lastname"], obj["Username"], obj["Password"])
+    t := (*cm_global).login(obj["Username"], obj["Password"])
+    fmt.Println("working")
+
+    cookie := http.Cookie{Name: "Username", Value: string(obj["Username"])}
+    http.SetCookie(w, &cookie)
+    cookie_status := http.Cookie{Name: "Status", Value: strconv.FormatBool(t)}
+    http.SetCookie(w, &cookie_status)
+    info := Login_Response{
+      Username: obj["Username"],
+      Status: t,
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(info)
+  }
+}
+
 func update_test(w http.ResponseWriter, req *http.Request){
   if req.Method == http.MethodPost{
     var obj map[string]string
@@ -450,6 +482,7 @@ func main() {
     http.HandleFunc("/login", get_login)
 	http.HandleFunc("/create-house", add_house)
     http.HandleFunc("/join-house", join_house)
+	http.HandleFunc("/registration", get_register)
     http.ListenAndServe(":8090", nil)
 
     /*for {

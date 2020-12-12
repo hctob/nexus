@@ -22,9 +22,13 @@
                 <li class="tab"><a href="#">Login</a></li>
             </ul>-->
             <div class="form-content">
-              <h1 style="color:white">Friends List</h1>
+              <h1 style="color:white">Add Friend</h1>
+              <h1 style="color:white">Create House</h1>
+              <h1 style="color:white">Join House</h1>
             </div>
-            <<button type="submit" id="sub">Add Friends</button>
+            <button type="submit" id="sub">Add Friend</button>
+            <button type="submit" id="create-house">Create House</button>
+            <button type="submit" id="join-house">Join House</button>
         </div>
 
         <script>
@@ -42,6 +46,12 @@
           }
           document.getElementById("sub").addEventListener("click", ()=>{
             window.location.href = 'add-friend.html';
+          });
+          document.getElementById("create-house").addEventListener("click", ()=>{
+            window.location.href = 'join_house.html';
+          });
+          document.getElementById("join-house").addEventListener("click", ()=>{
+            window.location.href = 'create-house.html';
           });
         </script>
     </body>

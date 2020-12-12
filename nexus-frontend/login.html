@@ -52,7 +52,24 @@
                                   "Password": document.querySelector('#password').value});
       console.log(data);
       xhr.send(data);
-
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4 && xhr.status == 200){
+            var theCookies = document.cookie.split(';');
+            var status = null;
+            for(var i = 0; i < theCookies.length; i++){
+              var temp = theCookies[i].substring(0,theCookies[i].length).split("=");
+              console.log(temp[0]);
+              console.log(temp[1]);
+              if(temp[0].substring(0, temp[0].length).trim() == "Status"){
+                status = (temp[1].trim() == 'true');
+              }
+            }
+            console.log(status);
+            if(status){
+              window.location.href = 'main-page.html';
+            }
+        }
+      }
     });
 
 
