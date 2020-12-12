@@ -49,11 +49,13 @@ func drive(uri, username, password string, cm ChannelPool) {
 		select {
 		case user := <-cm.createChannel:
 			//fmt.Println("Create user message received")
-			result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name, username: $username, password: $password}) RETURN n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
+			result, err := session.Run("CREATE (n:Person { first_name: $first_name, last_name: $last_name, username: $username, password: $password, at_risk: $status}) RETURN n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
 				"first_name": user.first_name,
 				"last_name":  user.last_name,
 				"username":   user.username,
-				"password":   user.password})
+				"password":   user.password,
+				"status": 	  user.at_risk,
+			})
 
 			if err != nil {
 				fmt.Println("Error:\n", err)
@@ -67,7 +69,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 		case house := <-cm.createHouse:
 			un := house.username
 			addr := house.address
-			result, err := session.Run("match (n:Person{username: $un}) create (h:House{address: $addr}) create (n)-[r:HOUSE]->(h) return h.address", map[string]interface{}{
+			result, err := session.Run("match (n:Person{username: $un}) create (h:House{address: $addr, should_quarantine: 'false'}) create (n)-[r:HOUSE]->(h) return h.address", map[string]interface{}{
 				"un":   un,
 				"addr": addr,
 			})
@@ -128,7 +130,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 				fmt.Printf("Updated %s %s to %s\n", update.username, update.property, result.Record().GetByIndex(0).(string))
 			}
 		case username := <-cm.getNodeChannel:
-			result, err := session.Run("match (n:Person {username: $u_name}) return n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
+			result, err := session.Run("match (n:Person {username: $u_name}) return n.first_name, n.last_name, n.username, n.password, n.at_risk", map[string]interface{}{
 				"u_name": username})
 
 			if err != nil {
@@ -137,7 +139,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 			}
 			//fmt.Println("query fine\n")
 			for result.Next() {
-				fmt.Printf("\nNode: \"%s %s\":\nusername: %s\npassword: %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
+				fmt.Printf("\nNode: \"%s %s\":\nusername: %s\npassword: %s\nat_risk: %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string), result.Record().GetByIndex(4).(string))
 			}
 		case houseQuery := <-cm.get_house:
 			input := houseQuery.input
@@ -145,7 +147,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 
 			if isUsername == true {
                 //use username of person in house
-				result, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p) return p.username, p.first_name, p.last_name", map[string]interface{}{
+				result, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p) return p.username, p.first_name, p.last_name, p.at_risk", map[string]interface{}{
 					"input": input,
 				})
 				if err != nil {
@@ -154,11 +156,11 @@ func drive(uri, username, password string, cm ChannelPool) {
 				}
 				fmt.Printf("%s's household:\n", input)
 				for result.Next() {
-					fmt.Printf("\t%s: %s %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+					fmt.Printf("\t%s: %s %s, status=%s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
 				}
 			} else {
 				//use address for query
-				result, err := session.Run("match (h:House{address: $input})<--(n) return n.username, n.first_name, n.last_name", map[string]interface{}{
+				result, err := session.Run("match (h:House{address: $input})<--(n) return n.username, n.first_name, n.last_name, n.at_risk", map[string]interface{}{
 					"input": input,
 				})
 				if err != nil {
@@ -167,7 +169,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 				}
 				fmt.Printf("House @ %s:\n", input)
 				for result.Next() {
-					fmt.Printf("\t%s: %s %s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string))
+					fmt.Printf("\t%s: %s %s, status=%s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
 				}
 			}
 		case friends := <-cm.friendChannel:
@@ -186,19 +188,31 @@ func drive(uri, username, password string, cm ChannelPool) {
 			for result.Next() {
 				fmt.Printf("\n%s\ncreated between %s and %s\n", result.Record().GetByIndex(0), result.Record().GetByIndex(1), result.Record().GetByIndex(2))
 			}
+		case username := <-cm.notify_chan:
+			fmt.Println("Username: ", username)
+			result, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p) set n.at_risk = 'exposed' set p.at_risk = 'true' set h.should_quarantine = 'true' return p.username", map[string]interface{}{
+				"input": username,
+			})
+			if err != nil {
+				fmt.Println("Error:\n", err)
+				return
+			}
+			for result.Next() {
+				fmt.Printf("\n%s is now at risk!\n", result.Record().GetByIndex(0).(string))
+			}
 		case login := <-cm.loginChannel:
 			un := login.username
 			//fmt.Println("Received username =", un)
 			pw := login.password
             if un == "admin" && (pw == "test" || pw == "ye") {
                 cm.loginGood <- true
-                user := &User{un, "", un, pw}
+                user := &User{un, "", un, pw, "false"}
                 //print_user_info(*user)
                 cm.loggedIn <- *user
                 return
             }
 			//fmt.Println("Received password =", pw)
-			result, err := session.Run("MATCH (n:Person{username: $username}) return n.first_name, n.last_name, n.username, n.password", map[string]interface{}{
+			result, err := session.Run("MATCH (n:Person{username: $username}) return n.first_name, n.last_name, n.username, n.password, n.at_risk", map[string]interface{}{
 				"username": un,
 				"password": pw,
 			})
@@ -214,9 +228,10 @@ func drive(uri, username, password string, cm ChannelPool) {
 				ln := result.Record().GetByIndex(1).(string)
 				un := result.Record().GetByIndex(2).(string)
 				pw := result.Record().GetByIndex(3).(string)
+				ar := result.Record().GetByIndex(4).(string)
 				if login.password == pw {
 					cm.loginGood <- true
-					user := &User{fn, ln, un, pw}
+					user := &User{fn, ln, un, pw, ar}
 					//print_user_info(*user)
 					cm.loggedIn <- *user
 				} else {
@@ -286,8 +301,9 @@ func main() {
 		}
 		if logged_in {
 			var option string
+			time.Sleep(time.Millisecond * 250)
 			fmt.Println("\nOptions: ")
-			fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Create Friend relationship\n5. View friends list of a given user\n6. Create/join a house\n7. Get household members (address/username)\n8. Exit")
+			fmt.Println("1. Create a user (1, create): \n2. Update a specific property of a Person node (update)\n3. Get a node by username\n4. Create Friend relationship\n5. View friends list of a given user\n6. Create/join a house\n7. Get household members (address/username)\n8. I'm exposed to COVID!!\n9. Exit")
 			fmt.Printf("nexus> ")
 			fmt.Scanln(&option)
 			if strings.ToLower(option) == "create" || option == "1" {
@@ -416,7 +432,10 @@ func main() {
 					time.Sleep(time.Millisecond * 100)
 				}
 
-			} else if strings.ToLower(option) == "e" || strings.ToLower(option) == "exit" || option == "8" {
+			} else if strings.ToLower(option) == "exposed" || strings.ToLower(option) == "covid" || strings.ToLower(option) == "covid-19" || option == "8" {
+					cm.notify_house(current_user.username)
+					time.Sleep(time.Millisecond * 100)
+				} else if strings.ToLower(option) == "e" || strings.ToLower(option) == "exit" || option == "9" {
 				fmt.Println("Exiting... gracefully")
 				return
 			}

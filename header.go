@@ -14,6 +14,7 @@ type User struct {
 	last_name  string
 	username   string
 	password   string
+	at_risk		string
 }
 
 type Update struct {
@@ -35,6 +36,7 @@ type Login struct {
 type House struct {
 	username string
 	address  string
+	should_quarantine	string
 }
 
 type Join struct {
@@ -60,6 +62,7 @@ type ChannelPool struct {
 	get_friends_list  chan string
 	get_house         chan HouseQuery
 	send_friends_list chan map[string]User
+	notify_chan		chan string
 }
 
 func pool_init() ChannelPool {
@@ -76,6 +79,7 @@ func pool_init() ChannelPool {
 	cm.createHouse = make(chan House, 1024)
 	cm.joinHouse = make(chan Join, 1024)
 	cm.get_house = make(chan HouseQuery, 1024)
+	cm.notify_chan = make(chan string, 1024)
 	return cm //return pointer to newly initialized ChannelPool struct
 }
 
@@ -84,7 +88,7 @@ func pool_init() ChannelPool {
 * Creates a Person node with the specified properties
  */
 func (cm ChannelPool) create_person(first_name, last_name, username, password string) {
-	var user = &User{first_name, last_name, username, password}
+	var user = &User{first_name, last_name, username, password, "false"}
 	cm.createChannel <- *user
 }
 
@@ -139,7 +143,7 @@ func (cm ChannelPool) login(username, password string) bool {
 }
 
 func (cm ChannelPool) create_house(username, address string) {
-	house := &House{username, address}
+	house := &House{username, address, "false"}
 	cm.createHouse <- *house
 }
 
@@ -158,8 +162,12 @@ func (cm ChannelPool) get_household(input string, isUsername bool) {
 	cm.get_house <- *houseQuery
 }
 
+func (cm ChannelPool) notify_house(username string) {
+	cm.notify_chan <- username
+}
+
 func print_user_info(user User) {
-	fmt.Printf("\nUser: \"%s\"\nfirst_name: %s\nlast_name: %s\n", user.username, user.first_name, user.last_name)
+	fmt.Printf("\nUser: \"%s\"\nfirst_name: %s\nlast_name: %s\nat_risk: %s", user.username, user.first_name, user.last_name, user.at_risk)
 }
 
 //connects a person to a house
