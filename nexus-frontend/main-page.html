@@ -14,7 +14,7 @@
     <body onload="displayUsername()">
         <div class="head">
             <h1>Nexus</h1>
-            <h4>Something something Golang.</h4>
+            <h4 id='welcome'>Something something Golang.</h4>
         </div>
         <div class="form">
             <!--<ul class="login-tabs">
@@ -38,6 +38,7 @@
               }
             }
             console.log(u_name);
+            document.getElementById('welcome').innerHTML = "Welcome, " + u_name + "!";
           }
           document.getElementById("sub").addEventListener("click", ()=>{
             window.location.href = 'add-friend.html';

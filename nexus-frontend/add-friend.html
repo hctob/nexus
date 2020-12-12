@@ -17,7 +17,7 @@
       var u_name = null;
       for(var i = 1; i < theCookies.length; i++){
         var temp = theCookies[i].substring(0,theCookies[i].length).split("=");
-        if(temp[0].substring(1, temp[0].length) == "Username"){
+        if(temp[0].substring(0, temp[0].length) == "Username"){
           u_name = temp[1];
         }
       }
