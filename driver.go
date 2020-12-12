@@ -17,8 +17,8 @@ import (
 
 var (
 	arg_uri     = flag.String("uri", "bolt://localhost:7687", "The URI for the Nexus database, to connect to it.")
-    arg_username_raw     = flag.String("u", "neo4j", "Usernames are unique identifiers for database users.")
-    arg_password_raw     = flag.String("p", "cs476", "Unencrypted password for selected username.")
+    arg_username_raw     = flag.String("u", "test", "Usernames are unique identifiers for database users.")
+    arg_password_raw     = flag.String("p", "test", "Unencrypted password for selected username.")
     cm_global * ChannelPool
 
     logged_in = false
@@ -206,7 +206,7 @@ func add_friend(w http.ResponseWriter, req *http.Request){
     }
     fmt.Println(obj["Username"])
     fmt.Println(obj["Friend_username"])
-    (*cm_global).login(obj["Username"], obj["Friend_username"])
+    (*cm_global).make_friends(obj["Username"], obj["Friend_username"])
   }
 }
 
