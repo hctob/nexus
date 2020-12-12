@@ -47,8 +47,8 @@
               var temp = theCookies[i].substring(0,theCookies[i].length).split("=");
               console.log(temp[0]);
               console.log(temp[1]);
-              if(temp[0].substring(1, temp[0].length) == "Status"){
-                status = (temp[1] == 'true');
+              if(temp[0].substring(0, temp[0].length).trim() == "Status"){
+                status = (temp[1].trim() == 'true');
               }
             }
             console.log(status);
