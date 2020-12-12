@@ -156,7 +156,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 				}
 				fmt.Printf("%s's household:\n", input)
 				for result.Next() {
-					fmt.Printf("\t%s: %s %s, status=%s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
+					fmt.Printf("\t%s: %s %s, at_risk=%s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
 				}
 			} else {
 				//use address for query
@@ -169,7 +169,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 				}
 				fmt.Printf("House @ %s:\n", input)
 				for result.Next() {
-					fmt.Printf("\t%s: %s %s, status=%s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
+					fmt.Printf("\t%s: %s %s, at_risk=%s\n", result.Record().GetByIndex(0).(string), result.Record().GetByIndex(1).(string), result.Record().GetByIndex(2).(string), result.Record().GetByIndex(3).(string))
 				}
 			}
 		case friends := <-cm.friendChannel:
@@ -189,17 +189,19 @@ func drive(uri, username, password string, cm ChannelPool) {
 				fmt.Printf("\n%s\ncreated between %s and %s\n", result.Record().GetByIndex(0), result.Record().GetByIndex(1), result.Record().GetByIndex(2))
 			}
 		case username := <-cm.notify_chan:
-			fmt.Println("Username: ", username)
-			result, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p) set n.at_risk = 'exposed' set p.at_risk = 'true' set h.should_quarantine = 'true' return p.username", map[string]interface{}{
+			//fmt.Println("Username: ", username)
+			//match (p)-[:FRIEND]->(f:Person) set f.at_risk = 'true' will also set all friends to true
+			_, err := session.Run("match (h:House)<-[r:HOUSE]-(n:Person{username: $input}) match (h)<-[:HOUSE]-(p:Person) match (p)-[:FRIEND]->(f:Person) set f.at_risk = 'true' set n.at_risk = 'exposed' set p.at_risk = 'true' set h.should_quarantine = 'true'", map[string]interface{}{
 				"input": username,
 			})
 			if err != nil {
 				fmt.Println("Error:\n", err)
 				return
 			}
-			for result.Next() {
-				fmt.Printf("\n%s is now at risk!\n", result.Record().GetByIndex(0).(string))
-			}
+			/*for result.Next() {
+				fmt.Printf("\nHousemate %s is now at risk!\n", result.Record().GetByIndex(0).(string))
+			}*/
+			fmt.Println("Friends and housemates are now exposed!")
 		case login := <-cm.loginChannel:
 			un := login.username
 			//fmt.Println("Received username =", un)
