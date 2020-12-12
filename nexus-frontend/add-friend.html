@@ -15,7 +15,7 @@
     function getUsername(){
       var theCookies = document.cookie.split(';');
       var u_name = null;
-      for(var i = 1; i < theCookies.length; i++){
+      for(var i = 0; i < theCookies.length; i++){
         var temp = theCookies[i].substring(0,theCookies[i].length).split("=");
         if(temp[0].substring(0, temp[0].length) == "Username"){
           u_name = temp[1];
