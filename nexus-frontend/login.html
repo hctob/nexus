@@ -1,0 +1,61 @@
+<<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Nexus: Register</title>
+        <!--Search engine result description-->
+        <meta name="description" content="Welcome to Nexus.">
+        <!--Keywords for search engine-->
+        <meta name="keywords" content="nexus, cs476">
+        <meta name="author" content="Dan Bottcher,William Kennedy, Milton Peraza, Joe Sanchez">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--Links the external .css file located in the /css/ folder-->
+        <link rel="stylesheet" href="css/regi.css" type="text/css">
+    </head>
+    <body>
+        <div class="head">
+            <h1>Nexus</h1>
+            <h4>Something something Golang.</h4>
+        </div>
+        <div class="form">
+            <ul class="login-tabs">
+                <li class="tab active l"><a href="#">Register</a></li>
+                <li class="tab"><a href="#">Login</a></li>
+            </ul>
+            <div class="form-content">
+            	<div class="field-wrap">
+              		<input type="text" required autocomplete="off" id="username" placeholder="Username:" />
+            	</div>
+            	<div class="field-wrap">
+              		<input type="text" required autocomplete="off" id="password" placeholder="Password:" />
+            	</div>
+            </div>
+        </div>
+        <div class="container">
+        	<button type="submit" id="sub">Login</button>
+      </div>
+
+    <script>
+
+    document.getElementById("sub").addEventListener("click", ()=>{
+      let result = document.querySelector('.result');
+      let xhr = new XMLHttpRequest();
+      let url = "/login";
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4 && xhr.status == 200){
+          //result.innerHTML = this.responseText;
+        }
+      }
+      var data = JSON.stringify({"Username": document.querySelector('#username').value,
+                                  "Password": document.querySelector('#password').value});
+      console.log(data);
+      xhr.send(data);
+
+    });
+
+
+    </script>
+    </body>
+</html>
