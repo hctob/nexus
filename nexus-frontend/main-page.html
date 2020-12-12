@@ -25,10 +25,12 @@
               <h1 style="color:white">Add Friend</h1>
               <h1 style="color:white">Create House</h1>
               <h1 style="color:white">Join House</h1>
+              <h1 style="color:white">Update Test</h1>
             </div>
             <button type="submit" id="sub">Add Friend</button>
             <button type="submit" id="create-house">Create House</button>
             <button type="submit" id="join-house">Join House</button>
+            <button type="submit" id="update-test">Update Test</button>
         </div>
 
         <script>
@@ -48,10 +50,13 @@
             window.location.href = 'add-friend.html';
           });
           document.getElementById("create-house").addEventListener("click", ()=>{
-            window.location.href = 'join_house.html';
+            window.location.href = 'create-house.html';
           });
           document.getElementById("join-house").addEventListener("click", ()=>{
-            window.location.href = 'create-house.html';
+            window.location.href = 'join_house.html';
+          });
+          document.getElementById("update-test").addEventListener("click", ()=>{
+            window.location.href = 'update-test.html';
           });
         </script>
     </body>
