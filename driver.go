@@ -204,7 +204,7 @@ func drive(uri, username, password string, cm ChannelPool) {
 			}*/
 			fmt.Println("Friends and housemates are now exposed!")
 		case test := <-cm.update_test:
-			result, err := session.Run("match (n:Person{username: $username}) set n.at_risk = $result set n.last_infected_time = $date return n.result, n.last_infected_time, n.username", map[string]interface{}{
+			result, err := session.Run("match (n:Person{username: $username}) set n.at_risk = $result set n.last_infected_time = $date return n.at_risk, n.last_infected_time, n.username", map[string]interface{}{
 				"username": test.username,
 				"result": test.result,
 				"date": test.date,
